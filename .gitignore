@@ -1,0 +1,21 @@
+# Dependencies / build
+node_modules/
+vendor/
+composer.lock
+
+# Tailwind build cache
+src/.tailwind/
+
+# Runtime artifacts
+storage/
+uploads/*
+!uploads/.htaccess
+!uploads/.gitkeep
+*.log
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
+*.code-workspace

@@ -1,0 +1,178 @@
+/* ================================================================
+   AURORA CYBER — Animation & glassmorphism core
+   Rules applied on top of compiled Tailwind.
+   Only transform/opacity driven (GPU cheap) unless noted.
+   ================================================================ */
+
+/* ---------------------------------------------------------------
+   1. Bilingual rendering (.e = English, .b = বাংলা)
+   html.lang-en / html.lang-bn toggled by i18n.js (+ localStorage)
+   --------------------------------------------------------------- */
+html.lang-bn .e { display: none !important; }
+html.lang-en .b { display: none !important; }
+html.lang-en .e, html.lang-bn .b { display: initial; }
+span.e, span.b { unicode-bidi: plaintext; }
+
+html.lang-bn body { font-family: 'Noto Sans Bengali', Outfit, system-ui, sans-serif; }
+
+/* ---------------------------------------------------------------
+   2. Aurora background blobs (pure transform/opacity keyframes)
+   --------------------------------------------------------------- */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform, opacity;
+  animation: aurora-shift 18s ease-in-out infinite;
+  transition: opacity .8s;
+}
+@keyframes aurora-shift {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); opacity: .7; }
+  33%      { transform: translate3d(6%,-5%,0) scale(1.18) rotate(9deg); opacity: 1; }
+  66%      { transform: translate3d(-6%,6%,0) scale(.94) rotate(-7deg); opacity: .75; }
+}
+.aurora-blob:nth-child(2) { animation-delay: -6s; }
+.aurora-blob:nth-child(3) { animation-delay: -12s; }
+
+/* dotted scrim behind hero copy for readability */
+.hero-dot-grid {
+  background-image: radial-gradient(rgba(148,163,184,.14) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 75%);
+}
+
+/* hero aurora canvas sits behind, cheap rAF loop (paused offscreen) */
+#aurora-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ---------------------------------------------------------------
+   3. Staggered load-in reveals (IntersectionObserver adds .is-in)
+   Delay < $i * 80ms injected inline by the observer
+   --------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px) scale(.985);
+  transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
+  will-change: transform, opacity;
+}
+.reveal.is-in { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+.reveal-left  { transform: translateX(-30px); }
+.reveal-right { transform: translateX(30px); }
+.reveal-left.is-in, .reveal-right.is-in { transform: translate3d(0,0,0); }
+/* stagger delay driven by CSS var set from JS (--rd: 0ms..) */
+.stagger > *  { transition-delay: var(--rd, 0ms); }
+
+/* ---------------------------------------------------------------
+   4. Neon hover glow — ::after blurred gradient, opacity only
+   --------------------------------------------------------------- */
+.neon-glow { position: relative; }
+.neon-glow::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity .45s ease;
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(6,182,212,.28), transparent 55%),
+    radial-gradient(120% 110% at 100% 100%, rgba(168,85,247,.24), transparent 55%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+.neon-glow:hover::after, .neon-glow:focus-visible::after { opacity: 1; }
+
+/* gradient border trick for premium cards */
+.grad-border {
+  position: relative;
+  background-clip: padding-box;
+}
+.grad-border::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(6,182,212,.55), rgba(255,255,255,.06) 40%, rgba(168,85,247,.45));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* shimmering top edge for featured glass cards */
+.shimmer-edge::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 20%, rgba(6,182,212,.35) 45%, rgba(168,85,247,.35) 55%, transparent 80%);
+  background-size: 220% 100%;
+  animation: shimmer-edge 5.5s linear infinite;
+  pointer-events: none;
+}
+@keyframes shimmer-edge { 0% { background-position: 220% 0; } 100% { background-position: -220% 0; } }
+
+/* animated gradient headline */
+.animate-gradient-x {
+  background-size: 220% 220%;
+  animation: gradient-x 6s ease infinite;
+}
+@keyframes gradient-x { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* ---------------------------------------------------------------
+   5. Micro utilities
+   --------------------------------------------------------------- */
+.fade-swap { animation: fade-swap .35s ease both; }
+@keyframes fade-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #06b6d4;
+  animation: typing 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .18s; }
+.typing-dot:nth-child(3) { animation-delay: .36s; }
+@keyframes typing { 0%,60%,100% { transform: translateY(0); opacity:.4; } 30% { transform: translateY(-4px); opacity:1; } }
+
+/* thin scrollbars */
+.nice-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.nice-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.28); border-radius: 8px; }
+.nice-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* -------- language toggle pill -------- */
+.filter-tab { transition: transform .25s ease, border-color .25s ease, color .25s ease, background-color .25s ease, box-shadow .25s ease; }
+.filter-tab.is-active {
+  background: linear-gradient(135deg, rgba(15,118,110,.9), rgba(6,182,212,.9));
+  color: #03201c;
+  border-color: rgba(6,182,212,.5);
+  box-shadow: 0 8px 30px -10px rgba(6,182,212,.6);
+}
+
+/* navbar elevation state */
+#site-nav.nav-scrolled { background: rgba(2,6,23,.72); backdrop-filter: blur(22px); border-bottom-color: rgba(255,255,255,.08); }
+.lang-pill .l-en,
+.lang-pill .l-bn {
+  padding: .3rem .62rem;
+  border-radius: .6rem;
+  transition: opacity .25s ease, background-color .25s ease, color .25s ease;
+}
+html.lang-en .lang-pill .l-en,
+html.lang-bn .lang-pill .l-bn {
+  background: linear-gradient(135deg, rgba(15,118,110,.85), rgba(6,182,212,.85));
+  color: #03201c;
+  opacity: 1;
+  box-shadow: 0 4px 18px -6px rgba(6,182,212,.6);
+}
+html.lang-en .lang-pill .l-bn,
+html.lang-bn .lang-pill .l-en { opacity: .55; }
+
+/* global fade transition between pages */
+body.page-leave { opacity: 0; transform: translateY(6px); }
+body { transition: opacity .3s ease, transform .3s ease; }
+
+/* hovers for service cards — accent line slides in on elevation */
+.service-card .service-cta { opacity: 0; transform: translateY(6px); transition: opacity .4s ease, transform .4s ease; }
+.service-card:hover .service-cta { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+}
