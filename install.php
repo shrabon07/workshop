@@ -77,7 +77,7 @@ try {
     }
     $body .= '</ol>
     <table><tr><th>Role</th><th>Email</th><th>Password</th></tr>
-    <tr><td>Admin</td><td>admin@auroracyber.com</td><td>admin123</td></tr>
+    <tr><td>Admin</td><td>maileditorportfolio@gmail.com</td><td>776654</td></tr>
     <tr><td>Customer (red tick)</td><td>customer@demo.com</td><td>customer123</td></tr>
     <tr><td>Customer (grey tick)</td><td>verified@demo.com</td><td>verified123</td></tr>
     <tr><td>Customer (green tick)</td><td>full@demo.com</td><td>full123</td></tr></table>
