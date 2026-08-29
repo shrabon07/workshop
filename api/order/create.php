@@ -78,9 +78,7 @@ if (current_user_id()) {
 send_mail(
     $email,
     'Order #' . $orderId . ' received — ' . SITE_NAME,
-    email_layout('Order confirmation', $body, ['badge' => 'Order #' . $orderId, 'tagline' => 'Your project is in good hands.']),
-    '',
-    email_layout_embeds()
+    email_layout('Order confirmation', $body, ['badge' => 'Order #' . $orderId, 'tagline' => 'Your project is in good hands.'])
 );
 
 json_ok([
