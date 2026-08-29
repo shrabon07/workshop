@@ -1,5 +1,8 @@
 <?php
-/** Admin — create a new customer directly (name / email / phone / password) + optional verify bypass. */
+/**
+ * Admin — create a new customer directly (name / email / phone / password) +
+ * optional verify bypass. Their login credentials are emailed to them.
+ */
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
@@ -33,10 +36,33 @@ DB::insert('verification_status', [
     'whatsapp_verified'     => $whatsV,
     'email_verified_at'     => $emailV ? $now : null,
     'whatsapp_verified_at'  => $whatsV ? $now : null,
-    'admin_override'        => ($emailV || $whatsV) ? 'none' : 'none',
+    'admin_override'        => 'none',
 ]);
 
+/* Email the customer their login credentials. */
+$loginUrl = url('account/login.php');
+$subject  = 'Welcome to ' . SITE_NAME . ' — your login details';
+$bodyHtml = '<p>Hi ' . e($name) . ',</p>'
+          . '<p>Your <b>' . e(SITE_NAME) . '</b> account has been created. Here are your login details:</p>'
+          . '<table style="width:100%;max-width:440px;margin:18px 0;border-collapse:collapse;font-size:14px;">'
+          . '<tr><td style="padding:10px 12px;background:#0f172a;color:#94a3b8;border:1px solid #1e293b;border-radius:10px 0 0 0;">Email</td>'
+          . '<td style="padding:10px 12px;background:#0f172a;color:#f1f5f9;font-weight:700;border:1px solid #1e293b;border-radius:0 10px 0 0;">' . e($email) . '</td></tr>'
+          . '<tr><td style="padding:10px 12px;background:#0f172a;color:#94a3b8;border:1px solid #1e293b;">Password</td>'
+          . '<td style="padding:10px 12px;background:#0f172a;color:#22d3ee;font-weight:700;border:1px solid #1e293b;">' . e($pass) . '</td></tr>'
+          . '<tr><td style="padding:10px 12px;background:#0f172a;color:#94a3b8;border:1px solid #1e293b;border-radius:0 0 10px 10px;">Sign in</td>'
+          . '<td style="padding:10px 12px;background:#0f172a;border:1px solid #1e293b;border-radius:0 0 10px 10px;"><a href="' . e($loginUrl) . '" style="color:#22d3ee;font-weight:700;">' . e($loginUrl) . '</a></td></tr>'
+          . '</table>'
+          . '<p style="margin-top:8px;font-size:12px;color:#94a3b8;">Keep this password safe, and change it after signing in. '
+          . 'Verifying your email gets you priority support on WhatsApp.</p>';
+$sent = send_mail(
+    $email,
+    $subject,
+    email_layout($subject, $bodyHtml, ['tagline' => 'Your account is ready.']),
+    "Hi " . $name . ",\n\nYour " . SITE_NAME . " account is ready.\n\nEmail: " . $email . "\nPassword: " . $pass . "\n\nSign in: " . $loginUrl
+);
+
 json_ok([
-    'user_id' => $id,
-    'email'   => $email,
+    'user_id'    => $id,
+    'email'      => $email,
+    'email_sent' => $sent,
 ]);

@@ -130,7 +130,12 @@
         A.post('api/admin/customer_create.php', new FormData(f))
           .then(function (r) {
             sb.dataset.loading = '';
-            if (r.ok) { m.close(); A.toast('Customer created', 'success'); location.reload(); }
+            if (r.ok) {
+              m.close();
+              if (r.email_sent) A.toast('Customer created — login details emailed', 'success');
+              else A.toast('Customer created, but the login email failed', 'error');
+              location.reload();
+            }
             else { sb.disabled = false; A.toast(r.error || 'Error', 'error'); }
           })
           .catch(function () { sb.dataset.loading = ''; sb.disabled = false; A.toast('Network error', 'error'); });
