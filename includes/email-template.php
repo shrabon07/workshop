@@ -88,13 +88,27 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 }
 
 /**
- * Logo block — a CSS-only render of the site favicon tile (gradient rounded
- * square + the stylised A) so it shows in every mail client with no image
- * attachment or remote URL required.
+ * Logo block — renders the real site logo (assets/img/logo.png, a 3x raster
+ * of logo.svg) as an inline cid image over a gradient-tile fallback cell.
  */
 function email_layout_logo(array $opts): string
 {
     unset($opts);
+    $file = APP_PATH . '/assets/img/logo.png';
+    if (is_file($file)) {
+        return
+'<table role="presentation" cellpadding="0" cellspacing="0" style="display:inline-table;vertical-align:middle;margin-right:11px;">
+  <tr>
+    <td width="38" height="38" align="center" valign="middle"
+        style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0f766e,#06b6d4);">
+      <img src="cid:aurora_logo" alt="" width="38" height="38"
+           style="display:block;width:38px;height:38px;border:0;border-radius:11px;">
+    </td>
+  </tr>
+</table>' .
+'<span style="vertical-align:middle;">Aurora</span>' .
+'<span style="color:#22d3ee;vertical-align:middle;">Cyber</span>';
+    }
     return
 '<table role="presentation" cellpadding="0" cellspacing="0" style="display:inline-table;vertical-align:middle;margin-right:11px;">
   <tr>
@@ -106,6 +120,16 @@ function email_layout_logo(array $opts): string
 </table>' .
 '<span style="vertical-align:middle;">Aurora</span>' .
 '<span style="color:#22d3ee;vertical-align:middle;">Cyber</span>';
+}
+
+/**
+ * Inline images the layout references, keyed by their Content-ID.
+ * Pass as the $embedded argument to send_mail().
+ */
+function email_layout_embeds(array $opts = []): array
+{
+    unset($opts);
+    return ['aurora_logo' => APP_PATH . '/assets/img/logo.png'];
 }
 
 /**
