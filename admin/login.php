@@ -41,9 +41,11 @@ $v = version_time();
 <link rel="stylesheet" href="<?= e(asset('css/tailwind.css')) ?>?v=<?= $v ?>">
 <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>?v=<?= $v ?>">
 </head>
-<body class="bg-slate-950 text-slate-300 min-h-screen grid place-items-center relative overflow-hidden">
-<div class="aurora-blob w-[560px] h-[460px] bg-cyan-500/10 -left-32 top-10"></div>
-<div class="aurora-blob w-[480px] h-[400px] bg-indigo-500/10 -right-28 bottom-0"></div>
+<body class="bg-slate-950 text-slate-300 min-h-screen grid place-items-center relative">
+<div class="absolute inset-0 overflow-hidden">
+  <div class="aurora-blob w-[560px] h-[460px] bg-cyan-500/10 -left-32 top-10"></div>
+  <div class="aurora-blob w-[480px] h-[400px] bg-indigo-500/10 -right-28 bottom-0"></div>
+</div>
 
 <div class="relative z-10 w-full max-w-sm px-5">
   <a href="<?= e(url('')) ?>" class="flex items-center justify-center gap-2.5 mb-8">

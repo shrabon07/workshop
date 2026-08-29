@@ -225,7 +225,7 @@ $cardIcons = ['🛒', '🚀', '💼', '🎯', '⚙️', '🏢'];
 </section>
 
 <!-- ============ CUSTOM ORDER ============ -->
-<section id="order" class="relative py-24">
+<section id="order" class="relative py-24 overflow-hidden">
   <div class="aurora-blob w-[460px] max-w-[80vw] h-[380px] bg-accent-electric/15 bottom-0 right-[-180px]"></div>
   <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
     <div class="grid gap-12 lg:grid-cols-2 items-center">

@@ -95,7 +95,7 @@ $payCount   = unpaid_payment_request_count();
   </nav>
 
   <!-- ============ MAIN ============ -->
-  <main class="relative min-w-0">
+  <main class="relative min-w-0 overflow-hidden">
     <div class="aurora-blob w-[520px] h-[420px] bg-cyan-500/8 -right-40 top-0"></div>
     <div class="relative px-4 sm:px-8 py-8 max-w-[1400px]">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-8">

@@ -142,10 +142,10 @@ require_once __DIR__ . '/../includes/public-header.php';
       <?php endif; ?>
     </section>
 
-    <div class="mt-10 grid gap-6 lg:grid-cols-3">
+    <div class="mt-10 grid gap-6 grid-cols-1 lg:grid-cols-3">
 
       <!-- ORDERS -->
-      <section class="lg:col-span-2 glass rounded-3xl p-6 grad-border">
+      <section class="lg:col-span-2 glass rounded-3xl p-6 grad-border min-w-0">
         <div class="flex items-center justify-between">
           <h2 class="font-bold text-white"><span data-i18n="dash_orders">My Orders</span></h2>
           <a href="<?= e(url('') . '#order') ?>" class="text-sm font-bold text-cyan-300 hover:text-cyan-200"><span data-i18n="dash_go_new">Start a project</span> →</a>
