@@ -26,7 +26,67 @@ spl_autoload_register(function (string $class): void {
 class_exists('PHPMailer\PHPMailer\Exception'); // pre-load exception class
 
 /**
+ * Brevo (Sendinblue) REST API send — HTTPS, so it works even on hosts that
+ * disable outbound SMTP (InfinityFree blocks smtp.gmail.com etc.). Uses the
+ * xkeysib-… API key. Returns true only when Brevo accepted the message.
+ */
+function brevo_api_send(string $to, string $subject, string $html, string $plain = '', array $embedded = []): bool
+{
+    if (!defined('BREVO_API_KEY') || BREVO_API_KEY === '') {
+        return false;
+    }
+    $payload = [
+        'sender'      => ['name' => MAIL_FROM_NAME, 'email' => MAIL_FROM],
+        'to'          => [['email' => $to]],
+        'subject'     => $subject,
+        'htmlContent' => $html,
+    ];
+    if ($plain !== '') {
+        $payload['textContent'] = $plain;
+    }
+    $attachments = [];
+    foreach ($embedded as $cid => $file) {
+        if (is_file($file)) {
+            $attachments[] = [
+                'name'    => basename($file),
+                'content' => base64_encode((string) file_get_contents($file)),
+                'cid'     => (string) $cid,
+            ];
+        }
+    }
+    if ($attachments !== []) {
+        $payload['attachment'] = $attachments;
+    }
+
+    $json = json_encode($payload);
+    $ctx  = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => "Authorization: Bearer " . BREVO_API_KEY . "\r\n" .
+                               "Content-Type: application/json\r\n" .
+                               "Accept: application/json\r\n" .
+                               "Content-Length: " . strlen($json) . "\r\n",
+            'content'       => $json,
+            'timeout'       => 25,
+            'ignore_errors' => true,
+        ],
+    ]);
+    $body = @file_get_contents('https://api.brevo.com/v3/smtp/email', false, $ctx);
+    $status = 0;
+    if (isset($http_response_header)) {
+        foreach ($http_response_header as $h) {
+            if (preg_match('#^HTTP/\S+\s+(\d+)#', $h, $m)) {
+                $status = (int) $m[1];
+            }
+        }
+    }
+    return $status >= 200 && $status < 300;
+}
+
+/**
  * Sends an HTML email. Returns true on success (or when recorded to disk).
+ *
+ * Ladder: Brevo REST API (if key set) → PHPMailer SMTP/mail() → disk fallback.
  *
  * $embedded = ['cidname' => '/absolute/path/to/image.png', ...] — attached as
  * inline (cid:) images so <img src="cid:cidname"> renders in Gmail/Outlook.
@@ -35,6 +95,10 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
 {
     if ($plain === '') {
         $plain = strip_tags((string) preg_replace('/<br\s*\/?>/i', "\n", $html));
+    }
+
+    if (brevo_api_send($to, $subject, $html, $plain, $embedded)) {
+        return true;
     }
 
     $usesLibrary = class_exists('PHPMailer\PHPMailer\PHPMailer');

@@ -112,6 +112,10 @@ define('MAIL_PASS', ac_env('SECRET_MAIL_PASS', 'MAIL_PASS', ''));
 define('MAIL_ENCRYPTION', ac_env('SECRET_MAIL_ENCRYPTION', 'MAIL_ENCRYPTION', 'tls'));
 define('MAIL_DEBUG', false);
 
+/* Brevo (Sendinblue) REST API key — HTTPS API path, not blocked by shared hosts
+ * that forbid outbound SMTP. Leave empty to use SMTP/mail()/disk only. */
+define('BREVO_API_KEY', ac_env('SECRET_BREVO_API_KEY', 'BREVO_API_KEY', ''));
+
 /* Public logo URLs used inside branded emails. They mirror the exact asset the
  * homepage renders (assets/img/logo.*). An SVG is shown by Apple Mail via the
  * <picture> source; PNG covers Gmail/Outlook/Android. Override per deployment:
