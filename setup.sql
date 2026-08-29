@@ -218,12 +218,12 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- =====================================================================
 
 -- ---- users : passwords shown are the demo credentials ------------------
--- admin@auroracyber.com / admin123
+-- maileditorportfolio@gmail.com / 776654
 -- customer@demo.com    / customer123   (red — nothing verified)
 -- verified@demo.com    / verified123   (grey — email only)
 -- full@demo.com        / full123       (green — email + whatsapp)
 INSERT INTO `users` (`id`,`name`,`email`,`password`,`phone`,`role`) VALUES
-(1,'Aurora Admin','admin@auroracyber.com','$2y$10$7pv1TUcyVVBCpwEY0RiXT.4u7WoNzcfvsJJlwEPTUcAxcMsTa04te','+8801712345678','admin'),
+(1,'Aurora Admin','maileditorportfolio@gmail.com','$2y$10$HyP0e/2TVZDTd56rVzZwYekOxhbvx9S35Vyxq42SJx2pPiXozQyMG','+8801712345678','admin'),
 (2,'Rahim Karim','customer@demo.com','$2y$10$pXKuiK.W0xmpeiLAh6sQoOkPDZpmJhzGrPcZJFBcCkfFHTlim/e9K','01711223344','customer'),
 (3,'Tasnim Binte Ali','verified@demo.com','$2y$10$e3a.Wk3yL.GNE6yeBh/BvOe2NXJmHfFMn6QnrMobqImwVtm3KqQ3W','01822334455','customer'),
 (4,'Nafis Hasan','full@demo.com','$2y$10$OzGifd3F/jpKOPiEkG1/WevoeS0cwl4JiurJjDZSLTdKtBWZYnfuG','01933445566','customer');
