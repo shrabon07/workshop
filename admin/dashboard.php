@@ -6,7 +6,7 @@ require_admin();
 $stats = [
     'orders'        => (int) DB::value('SELECT COUNT(*) FROM orders'),
     'orders_pending'=> (int) DB::value('SELECT COUNT(*) FROM orders WHERE status = "pending"'),
-    'revenue'       => (float) DB::value('SELECT COALESCE(SUM(budget),0) FROM orders WHERE status IN ("completed")'),
+    'revenue'       => (float) DB::value('SELECT COALESCE(SUM(budget),0) FROM orders WHERE status IN ("delivered")'),
     'customers'     => (int) DB::value('SELECT COUNT(*) FROM users WHERE role = "customer"'),
     'verified_full' => (int) DB::value('SELECT COUNT(*) FROM verification_status WHERE whatsapp_verified = 1 AND email_verified = 1'),
     'open_chats'    => (int) DB::value('SELECT COUNT(*) FROM chat_sessions WHERE status = "open"'),
@@ -35,7 +35,7 @@ $topServices = DB::all(
       GROUP BY s.id ORDER BY cnt DESC, s.sort_order ASC LIMIT 5'
 );
 
-$statuses = ['pending' => 'st-inactive', 'in_progress' => 'st-inactive', 'completed' => 'st-active', 'cancelled' => 'st-archived'];
+$statuses = ['pending' => 'st-inactive', 'in_progress' => 'st-inactive', 'delivered' => 'st-active', 'cancelled' => 'st-archived'];
 
 $cards = [
     ['label_en' => 'Total orders', 'label_bn' => 'মোট অর্ডার', 'value' => number_format($stats['orders']), 'icon' => '◷', 'glow' => 'from-cyan-500/15 to-teal-500/5 border-cyan-400/20', 'text' => 'text-cyan-300'],

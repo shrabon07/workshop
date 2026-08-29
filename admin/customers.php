@@ -96,7 +96,7 @@ require_once __DIR__ . '/inc/head.php';
     </table>
   </div>
 </div>
-<script src="assets/js/admin-customers.js"></script>
+<script defer src="<?= e(asset('js/admin-customers.js')) ?>?v=<?= $v ?>"></script>
 <?php
 require_once __DIR__ . '/inc/foot.php';
 ?>

@@ -44,6 +44,22 @@
 .admin-table tbody tr { transition: background-color .2s ease; }
 .admin-table tbody tr:hover { background: rgba(255,255,255,.025); }
 
+/* order status update button — inline spinner while saving */
+.order-update[data-loading] { pointer-events: none; }
+.order-update[data-loading]::after {
+  content: '';
+  width: 13px;
+  height: 13px;
+  margin-left: 8px;
+  border: 2px solid rgba(3,32,28,.45);
+  border-top-color: #03201c;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: -2px;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* modal */
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 90;

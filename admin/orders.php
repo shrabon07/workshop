@@ -25,10 +25,10 @@ $sql .= ' ORDER BY o.created_at DESC LIMIT 200';
 $orders = DB::all($sql, $p);
 
 $statuses = [
-  'pending'   => ['Pending', 'অপেক্ষমাণ'],
+  'pending'     => ['Pending', 'অপেক্ষমাণ'],
   'in_progress' => ['In Progress', 'চলমান'],
-  'completed' => ['Completed', 'সম্পন্ন'],
-  'cancelled' => ['Cancelled', 'বাতিল'],
+  'delivered'   => ['Delivered', 'ডেলিভারি সম্পন্ন'],
+  'cancelled'   => ['Cancelled', 'বাতিল'],
 ];
 
 $PAGE_TITLE = 'Orders';
@@ -76,16 +76,21 @@ require_once __DIR__ . '/inc/head.php';
           <td class="font-extrabold text-slate-100">৳ <?= e(number_format((float) $o['budget'])) ?></td>
           <td class="text-xs text-slate-400"><?= e(date('M j, Y', strtotime($o['created_at']))) ?></td>
           <td>
-            <span class="st-badge <?= $o['status'] === 'completed' ? 'st-active' : ($o['status'] === 'cancelled' ? 'st-archived' : 'st-inactive') ?>">
+            <span class="st-badge <?= $o['status'] === 'delivered' ? 'st-active' : ($o['status'] === 'cancelled' ? 'st-archived' : 'st-inactive') ?>">
               <?= e($statuses[$o['status']][0] ?? $o['status']) ?>
             </span>
           </td>
           <td>
-            <select class="order-status input !py-1.5 !px-2 text-xs w-40" data-id="<?= (int) $o['id'] ?>" <?= $o['status'] === 'cancelled' ? 'data-lock="1"' : '' ?>>
-              <?php foreach ($statuses as $st => $lb): ?>
-                <option value="<?= e($st) ?>" <?= $o['status'] === $st ? 'selected' : '' ?>><?= e($lb[0]) ?></option>
-              <?php endforeach; ?>
-            </select>
+            <div class="flex items-center gap-2 justify-end">
+              <select class="order-status input !py-1.5 !px-2 text-xs w-40" data-id="<?= (int) $o['id'] ?>" data-orig="<?= e($o['status']) ?>" <?= $o['status'] === 'cancelled' ? 'disabled' : '' ?>>
+                <?php foreach ($statuses as $st => $lb): ?>
+                  <option value="<?= e($st) ?>" <?= $o['status'] === $st ? 'selected' : '' ?>><?= e($lb[0]) ?></option>
+                <?php endforeach; ?>
+              </select>
+              <button type="button" class="order-update btn-teal !py-1.5 !px-3 !text-xs shrink-0" data-id="<?= (int) $o['id'] ?>" disabled <?= $o['status'] === 'cancelled' ? 'data-lock="1" disabled' : '' ?>>
+                <?= l('Update', 'আপডেট') ?>
+              </button>
+            </div>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -96,7 +101,7 @@ require_once __DIR__ . '/inc/head.php';
     </table>
   </div>
 </div>
-<script src="assets/js/admin-orders.js"></script>
+<script defer src="<?= e(asset('js/admin-orders.js')) ?>?v=<?= $v ?>"></script>
 <?php
 require_once __DIR__ . '/inc/foot.php';
 ?>
