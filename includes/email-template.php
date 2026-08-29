@@ -31,7 +31,7 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
             <td style="padding:0 0 10px;border-radius:22px;background:linear-gradient(135deg,rgba(6,182,212,.5),rgba(255,255,255,.06) 40%,rgba(168,85,247,.45));">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;background:#0b1220;border-radius:21px;">
 
-                <!-- wordmark bar (same as site nav: tile logo + white Aurora + gradient Cyber) -->
+                <!-- wordmark bar (plain text brand name, no image) -->
                 <tr>
                   <td style="padding:26px 30px 18px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -88,29 +88,12 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 }
 
 /**
- * Logo block — the exact homepage asset (logo.svg) via <picture>, with the
- * SVG source for Apple Mail and a PNG fallback (raster of the same file)
- * for Gmail/Outlook/Android. Rendered over a gradient-tile cell so the
- * header never collapses if a client hides remote images.
+ * Wordmark — plain text brand name (no image, so nothing can be blocked).
  */
 function email_layout_logo(array $opts): string
 {
     unset($opts);
-    $img = '<picture>' .
-            (EMAIL_LOGO_URL !== '' ? '<source type="image/svg+xml" srcset="' . e(EMAIL_LOGO_URL) . '">' : '') .
-            '<img src="' . e(EMAIL_LOGO_PNG_URL) . '" alt="Aurora Cyber" width="38" height="38"
-             style="display:block;width:38px;height:38px;border:0;border-radius:11px;">' .
-           '</picture>';
-    return
-'<table role="presentation" cellpadding="0" cellspacing="0" style="display:inline-table;vertical-align:middle;margin-right:11px;">
-  <tr>
-    <td width="38" height="38" align="center" valign="middle"
-        style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0f766e,#06b6d4);">
-      ' . $img . '
-    </td>
-  </tr>
-</table>' .
-'<span style="vertical-align:middle;">Aurora</span>' .
+    return '<span style="vertical-align:middle;">Aurora</span>' .
 '<span style="color:#22d3ee;vertical-align:middle;">Cyber</span>';
 }
 
