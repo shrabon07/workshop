@@ -18,6 +18,30 @@ html.lang-bn body { font-family: 'Noto Sans Bengali', Outfit, system-ui, sans-se
 /* ---------------------------------------------------------------
    2. Aurora background blobs (pure transform/opacity keyframes)
    --------------------------------------------------------------- */
+:root { color-scheme: dark; }
+
+/* Native form controls: keep the whole dropdown theme dark everywhere
+   (the closed .input field is already glass-dark; without color-scheme
+   the open option list renders as a bright OS popup). */
+select, option, input, textarea, datalist {
+  color-scheme: dark;
+}
+select {
+  color: #e2e8f0;
+  background-color: rgba(255,255,255,.05);
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .9rem center;
+  padding-right: 2.4rem;
+}
+select option {
+  background-color: #0b1220;
+  color: #e2e8f0;
+}
+
 .aurora-blob {
   position: absolute;
   border-radius: 9999px;
