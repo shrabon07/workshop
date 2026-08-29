@@ -18,9 +18,25 @@
       return v.toString(16);
     });
   }
+  function getCookie(name) {
+    var m = document.cookie.match('(^|;)\\s*' + name + '=([^;]*)');
+    return m ? decodeURIComponent(m[2]) : '';
+  }
+  function setCookie(name, value, days) {
+    var exp = '';
+    if (days) {
+      var d = new Date(); d.setTime(d.getTime() + days * 864e5);
+      exp = '; expires=' + d.toUTCString();
+    }
+    document.cookie = name + '=' + encodeURIComponent(value) + exp + '; path=/; samesite=Lax';
+  }
   function token() {
     var t = localStorage.getItem(TOKEN_KEY);
-    if (!t) { t = uuid(); localStorage.setItem(TOKEN_KEY, t); }
+    if (!t) t = getCookie(TOKEN_KEY);
+    var restored = !!t;
+    if (!t) { t = uuid(); }
+    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    setCookie(TOKEN_KEY, t, 365);
     return t;
   }
   function lang() { return window.I18N ? I18N.lang : 'en'; }
@@ -241,6 +257,10 @@
       typing(false);
       if (!d.ok) return;
       state.bot_mode = d.bot_mode; state.admin_taken = d.admin_taken;
+      if (d.token) {
+        try { localStorage.setItem(TOKEN_KEY, d.token); } catch (e) {}
+        setCookie(TOKEN_KEY, d.token, 365);
+      }
       lastId = 0; rendered = [];
       updateGate(d);
       if (!state.need_name) append(d.messages);

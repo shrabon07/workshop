@@ -12,6 +12,7 @@ require_once __DIR__ . '/../includes/bot.php';
 // Messages that literally start with "::" are dictionary keys the client
 // resolves via i18n.js → the bot greets in the visitor's active language.
 const CHAT_I18N_MARK = '::';
+const CHAT_COOKIE = 'wc_chat_token';
 
 function chat_token(bool $must = true): string
 {
@@ -31,8 +32,27 @@ function chat_need_name(array $row): int
     return (int) (trim((string) ($row['guest_name'] ?? '')) === '');
 }
 
+/**
+ * If the browser just minted a fresh token (storage cleared on refresh) but
+ * still has its cookie identity pointing at an existing session, resume that
+ * session instead of orphaning the guest's chat history.
+ */
+function chat_resume_token(string $token): string
+{
+    if (!empty($_COOKIE[CHAT_COOKIE]) && $_COOKIE[CHAT_COOKIE] !== $token) {
+        $cookieToken = (string) $_COOKIE[CHAT_COOKIE];
+        $existing    = DB::get('SELECT id FROM chat_sessions WHERE session_token = ?', [$token]);
+        $cookieChat  = DB::get('SELECT id FROM chat_sessions WHERE session_token = ?', [$cookieToken]);
+        if ($cookieChat && !$existing) {
+            return $cookieToken;
+        }
+    }
+    return $token;
+}
+
 function chat_session(string $token): array
 {
+    $token = chat_resume_token($token);
     $row = DB::get('SELECT * FROM chat_sessions WHERE session_token = ?', [$token]);
     $isNew = !$row;
     if (!$row) {
@@ -55,6 +75,11 @@ function chat_session(string $token): array
     }
     $_SESSION['chat_token'] = $token;
     if ($isNew) {
+        // persist the guest's identity beyond refreshing (even if the client's
+        // localStorage gets cleared, the cookie keeps the same chat session).
+        if (!headers_sent() && (!isset($_COOKIE[CHAT_COOKIE]) || $_COOKIE[CHAT_COOKIE] !== $token)) {
+            setcookie(CHAT_COOKIE, $token, ['expires' => time() + 365 * 86400, 'path' => '/', 'samesite' => 'Lax', 'httponly' => false]);
+        }
         DB::insert('chat_messages', ['chat_id' => $row['id'], 'sender' => 'bot', 'message' => CHAT_I18N_MARK . 'chat_bot_hi' . CHAT_I18N_MARK]);
         DB::insert('chat_messages', ['chat_id' => $row['id'], 'sender' => 'bot', 'message' => CHAT_I18N_MARK . 'chat_bot_menu' . CHAT_I18N_MARK]);
     }
@@ -75,7 +100,7 @@ function action_open(): void
     $s = chat_session($token);
     json_ok([
         'chat_id'  => (int) $s['id'],
-        'token'    => $token,
+        'token'    => $s['session_token'],
         'need_name' => chat_need_name($s),
         'guest_name' => (string) ($s['guest_name'] ?? ''),
         'bot_mode' => (int) $s['bot_mode'],
@@ -151,7 +176,7 @@ function action_send(): void
 
 function action_read(): void
 {
-    $token = chat_token(true);
+    $token = chat_resume_token(chat_token(true));
     $after = max(0, (int) (get('after') ?: post('after')));
     $s = DB::get('SELECT * FROM chat_sessions WHERE session_token = ?', [$token]);
     if (!$s) {
