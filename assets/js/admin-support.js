@@ -54,7 +54,7 @@
   }
 
   function loadSessions() {
-    fetch((window.AURORA_BASE || '') + '/api/admin/chat_list.php').then(function (r) { return r.json(); }).then(function (d) {
+    fetch((window.AURORA_BASE || '') + '/api/admin/support_list.php').then(function (r) { return r.json(); }).then(function (d) {
       if (d.ok) renderSessions(d.chats || []);
     }).catch(function () {});
   }
@@ -65,7 +65,7 @@
     replyInput.disabled = false;
     replyForm.querySelector('[type=submit]').disabled = false;
     document.querySelectorAll('.session-row').forEach(function (b) { b.classList.toggle('bg-cyan-400/10', Number(b.getAttribute('data-chat-id')) === id); });
-    fetch((window.AURORA_BASE || '') + '/api/admin/chat_messages.php?chat_id=' + id).then(function (r) { return r.json(); }).then(function (d) {
+    fetch((window.AURORA_BASE || '') + '/api/admin/support_messages.php?chat_id=' + id).then(function (r) { return r.json(); }).then(function (d) {
       if (!d.ok) return;
       var c = d.chat;
       headLabel.innerHTML = esc(whoName(c)) + '<span class="text-[11px] text-slate-400 font-normal ml-2">+' + esc(c.phone || '—') + ' · ' + (Number(c.bot_mode) ? 'bot' : 'manual') + '</span>';
@@ -84,7 +84,7 @@
   function pollActive() {
     if (!activeId) return;
     var reqId = activeId;
-    fetch((window.AURORA_BASE || '') + '/api/admin/chat_messages.php?chat_id=' + reqId).then(function (r) { return r.json(); }).then(function (d) {
+    fetch((window.AURORA_BASE || '') + '/api/admin/support_messages.php?chat_id=' + reqId).then(function (r) { return r.json(); }).then(function (d) {
       if (!d.ok || reqId !== activeId) return;
       var ms = d.messages || [];
       if (ms.length !== lastCount) {
@@ -107,7 +107,7 @@
     if (!id || !text) return;
     var btn = replyForm.querySelector('[type=submit]');
     btn.disabled = true;
-    A.post('api/admin/chat_reply.php', { chat_id: id, message: text }).then(function (d) {
+    A.post('api/admin/support_reply.php', { chat_id: id, message: text }).then(function (d) {
       btn.disabled = false;
       if (d.ok) {
         replyInput.value = '';
@@ -126,7 +126,7 @@
     var self = takeoverBtn;
     if (!self.getAttribute('data-chat-id')) return;
     self.disabled = true;
-    A.post('api/admin/chat_takeover.php', { chat_id: self.getAttribute('data-chat-id'), action: self.getAttribute('data-action') })
+    A.post('api/admin/support_takeover.php', { chat_id: self.getAttribute('data-chat-id'), action: self.getAttribute('data-action') })
       .then(function (d) {
         self.disabled = false;
         if (d.ok) {

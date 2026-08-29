@@ -1,4 +1,4 @@
-/* Aurora Cyber — custom order form (AJAX to api/order/create.php) */
+/* Aurora Cyber — custom order form (AJAX to api/order/submit.php) */
 (function () {
   'use strict';
 
@@ -46,7 +46,7 @@
       var original = btn.innerHTML;
       btn.innerHTML = '<span class="inline-flex items-center gap-2"><span class="w-4 h-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin"></span> ' + langSel('Sending…', 'পাঠানো হচ্ছে…') + '</span>';
 
-      fetch((window.AURORA_BASE || '') + '/api/order/create.php', {
+      fetch((window.AURORA_BASE || '') + '/api/order/submit.php', {
         method: 'POST',
         headers: { 'X-Requested-With': 'fetch' },
         body: new FormData(form)

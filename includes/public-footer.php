@@ -60,7 +60,7 @@ $ver = version_time();
 <?php if (isset($LOAD_ORDER_JS)): ?>
 <script defer src="<?= e(asset('js/order.js')) ?>?v=<?= $ver ?>"></script>
 <?php endif; ?>
-<script defer src="<?= e(asset('js/chat.js')) ?>?v=<?= $ver ?>"></script>
+<script defer src="<?= e(asset('js/support.js')) ?>?v=<?= $ver ?>"></script>
 <script defer src="<?= e(asset('js/scroll-nav.js')) ?>?v=<?= $ver ?>"></script>
 </body>
 </html>

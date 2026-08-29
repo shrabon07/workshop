@@ -97,7 +97,7 @@ require_once __DIR__ . '/inc/head.php';
       <?php if ($recentChats): ?>
         <div class="space-y-2">
           <?php foreach ($recentChats as $c): ?>
-            <a href="chats.php?chat_id=<?= (int) $c['id'] ?>" class="flex items-center gap-3 rounded-2xl glass-chip px-3.5 py-3 hover:bg-white/5 transition-colors">
+            <a href="support.php?chat_id=<?= (int) $c['id'] ?>" class="flex items-center gap-3 rounded-2xl glass-chip px-3.5 py-3 hover:bg-white/5 transition-colors">
               <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0 <?= (int) $c['bot_mode'] ? '' : 'animate-pulse' ?>"></span>
               <span class="min-w-0">
                 <span class="block text-xs font-bold text-slate-100 truncate"><?= e($c['user_name'] ?? 'Guest') ?></span>
@@ -110,7 +110,7 @@ require_once __DIR__ . '/inc/head.php';
       <?php else: ?>
         <p class="text-xs text-slate-500"><?= l('No live chats right now.', 'এখন কোনো লাইভ চ্যাট নেই।') ?></p>
       <?php endif; ?>
-      <a href="chats.php" class="mt-4 block text-center btn-ghost !py-2.5 text-xs"><?= l('Open chat hub', 'চ্যাট হাব খুলুন') ?></a>
+      <a href="support.php" class="mt-4 block text-center btn-ghost !py-2.5 text-xs"><?= l('Open chat hub', 'চ্যাট হাব খুলুন') ?></a>
     </section>
 
     <section class="glass-strong rounded-3xl p-6">

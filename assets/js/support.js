@@ -1,6 +1,6 @@
 /* ==================================================================
    AURORA CYBER — floating glass live-chat widget
-   Bot auto-reply → admin takeover via api/chat.php & admin panel.
+   Bot auto-reply → admin takeover via api/support.php & admin panel.
    ================================================================== */
 (function () {
   'use strict';
@@ -248,7 +248,7 @@
     payload.token = token();
     var fd = new FormData();
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
-    return fetch((window.AURORA_BASE || '') + '/api/chat.php', { method: 'POST', body: fd }).then(function (r) { return r.json(); });
+    return fetch((window.AURORA_BASE || '') + '/api/support.php', { method: 'POST', body: fd }).then(function (r) { return r.json(); });
   }
 
   function openChat() {

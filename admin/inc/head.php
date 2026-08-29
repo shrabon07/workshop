@@ -19,7 +19,7 @@ $navItems = [
     'orders'     => ['url' => 'orders.php',     'icon' => '◷', 'key' => 'a_orders'],
     'payments'   => ['url' => 'payments.php',   'icon' => '💳', 'key' => 'a_payments'],
     'customers'  => ['url' => 'customers.php',  'icon' => '◉', 'key' => 'a_customers'],
-    'chats'      => ['url' => 'chats.php',      'icon' => '✉', 'key' => 'a_chats'],
+    'chats'      => ['url' => 'support.php',      'icon' => '✉', 'key' => 'a_chats'],
 ];
 
 $orderCount = (int) DB::value('SELECT COUNT(*) FROM orders WHERE status = "pending"');

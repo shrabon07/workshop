@@ -21,7 +21,7 @@ $v = version_time();
 <script defer src="<?= e(asset('js/admin-services.js')) ?>?v=<?= $v ?>"></script>
 <?php endif; ?>
 <?php if (isset($LOAD_ADMIN_CHATS)): ?>
-<script defer src="<?= e(asset('js/admin-chats.js')) ?>?v=<?= $v ?>"></script>
+<script defer src="<?= e(asset('js/admin-support.js')) ?>?v=<?= $v ?>"></script>
 <?php endif; ?>
 </body>
 </html>
