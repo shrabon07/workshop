@@ -44,14 +44,41 @@ $orderId = DB::insert('orders', [
     'status'       => 'pending',
 ]);
 
-// Fire-and-forget ack email (never blocks the response).
+// Fire-and-forget branded confirmation email (never blocks the response).
+$orderRow = [
+    'id'           => $orderId,
+    'name'         => $name,
+    'email'        => $email,
+    'phone'        => $phone,
+    'project_type' => $projectType,
+    'budget'       => $budget,
+    'details'      => $details,
+];
+$body = '<p>Hi ' . e($name) . ',</p>
+<p>Thanks for reaching out to our team! Your project brief is confirmed and is now in our queue.</p>
+' . email_order_facts($orderRow) . '
+
+<p><strong>You shared with us:</strong></p>
+' . email_brief_block($details) . '
+
+<p style="margin-top:16px;">What happens next:</p>
+<ol style="margin:6px 0 0 20px;padding-left:18px;color:#334155;">
+  <li>Our team reviews your brief (Mon–Sat).</li>
+  <li>You get a personal reply with a plan &amp; quote within <strong>24 hours</strong>.</li>
+  <li>We refine the scope together on a quick call or WhatsApp.</li>
+</ol>
+
+<p style="margin-top:16px;">In a hurry, or just like chatting?</p>
+' . email_button('Message us on WhatsApp', WHATSAPP_LINK);
+
+if (current_user_id()) {
+    $body .= '<p style="margin-top:14px;font-size:13px;color:#64748b;">You can track this order anytime from your <a href="' . e(url('account/dashboard.php')) . '" style="color:#0f766e;">customer dashboard</a>.</p>';
+}
+
 send_mail(
     $email,
-    'We received your project brief — Aurora Cyber',
-    '<h2 style="color:#0f766e">Thanks ' . e($name) . ' 🙌</h2>
-     <p>We received your brief for <strong>' . e($projectType ?: 'your project') . '</strong>.</p>
-     <p>Our team will review it and reply within <strong>24 hours</strong> (Mon–Sat).</p>
-     <p>You can chat with us anytime: <a href="' . WHATSAPP_LINK . '">WhatsApp</a></p>'
+    'Order #' . $orderId . ' received — ' . SITE_NAME,
+    email_layout('Order confirmation', $body, ['badge' => 'Order #' . $orderId, 'tagline' => 'Your project is in good hands.'])
 );
 
 json_ok([

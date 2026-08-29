@@ -13,6 +13,7 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/mailer.php';
+require_once __DIR__ . '/email-template.php';
 
 if (!is_dir(UPLOAD_DIR)) {
     @mkdir(UPLOAD_DIR, 0775, true);
