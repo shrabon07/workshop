@@ -104,41 +104,78 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
     $usesLibrary = class_exists('PHPMailer\PHPMailer\PHPMailer');
     $hasSmtp     = MAIL_HOST !== '' && MAIL_USER !== '';
 
+    // Candidate SMTP routes, tried in order: primary (e.g. Gmail via pinned
+    // IP because InfinityFree DNS-blocks smtp.gmail.com) then a fallback relay.
+    $smtpCandidates = [];
+    if ($hasSmtp) {
+        $smtpCandidates[] = [
+            'host' => MAIL_HOST,
+            'port' => MAIL_PORT,
+            'user' => MAIL_USER,
+            'pass' => MAIL_PASS,
+            'sec'  => MAIL_ENCRYPTION, // 'tls' / 'ssl' / ''
+            'sni'  => defined('MAIL_HOST_SNI') ? MAIL_HOST_SNI : '',
+        ];
+    }
+    if (defined('MAIL_FALLBACK_HOST') && MAIL_FALLBACK_HOST !== '' && MAIL_FALLBACK_USER !== '') {
+        $smtpCandidates[] = [
+            'host' => MAIL_FALLBACK_HOST,
+            'port' => MAIL_FALLBACK_PORT,
+            'user' => MAIL_FALLBACK_USER,
+            'pass' => MAIL_FALLBACK_PASS,
+            'sec'  => MAIL_FALLBACK_ENCRYPTION,
+            'sni'  => '',
+        ];
+    }
+
     try {
         if ($usesLibrary) {
-            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+            foreach ($smtpCandidates as $cfg) {
+                try {
+                    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+                    $mail->isSMTP();
+                    $mail->Host       = $cfg['host'];
+                    $mail->SMTPAuth   = true;
+                    $mail->Username   = $cfg['user'];
+                    $mail->Password   = $cfg['pass'];
+                    $mail->Port       = $cfg['port'];
+                    $mail->SMTPSecure = $cfg['sec'];
+                    $mail->SMTPDebug  = MAIL_DEBUG ? 2 : 0;
+                    if ($cfg['sni'] !== '') {
+                        // Host is a pinned IP while the TLS cert/SNI belongs to
+                        // the real hostname (smtp.gmail.com on InfinityFree).
+                        $mail->SMTPOptions = [
+                            'ssl' => [
+                                'verify_peer'      => true,
+                                'verify_peer_name' => false,
+                                'SNI_enabled'      => true,
+                                'peer_name'        => $cfg['sni'],
+                            ],
+                        ];
+                    }
 
-            if ($hasSmtp) {
-                $mail->isSMTP();
-                $mail->Host       = MAIL_HOST;
-                $mail->SMTPAuth   = true;
-                $mail->Username   = MAIL_USER;
-                $mail->Password   = MAIL_PASS;
-                $mail->Port       = MAIL_PORT;
-                $mail->SMTPSecure = MAIL_ENCRYPTION; // 'tls' / 'ssl' / ''
-                $mail->SMTPDebug  = MAIL_DEBUG ? 2 : 0;
-            } else {
-                $mail->isMail();
-            }
+                    $mail->CharSet = 'UTF-8';
+                    $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
+                    $mail->addAddress($to);
+                    $mail->Subject = $subject;
+                    $mail->isHTML(true);
+                    $mail->Body    = $html;
+                    $mail->AltBody = $plain;
 
-            $mail->CharSet = 'UTF-8';
-            $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-            $mail->addAddress($to);
-            $mail->Subject = $subject;
-            $mail->isHTML(true);
-            $mail->Body    = $html;
-            $mail->AltBody = $plain;
+                    foreach ($embedded as $cid => $file) {
+                        if (is_file($file)) {
+                            $mail->addEmbeddedImage($file, $cid, basename($file));
+                        }
+                    }
 
-            foreach ($embedded as $cid => $file) {
-                if (is_file($file)) {
-                    $mail->addEmbeddedImage($file, $cid, basename($file));
+                    if ($mail->send()) {
+                        return true;
+                    }
+                } catch (Throwable $e) {
+                    // try the next candidate route
                 }
             }
-
-            if ($mail->send()) {
-                return true;
-            }
-            // SMTP failed → fall through to disk so dev flows keep working.
+            // all SMTP routes failed → fall through to disk so dev flows keep working.
         }
 
         if (function_exists('mail')) {
