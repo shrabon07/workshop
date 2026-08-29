@@ -27,3 +27,33 @@ Guidance for AI coding agents working in this repository.
 - Bangla shows as `?` in Windows console/mysql byte-dump — display-only; HTTP/DB bytes are correct UTF-8.
 - CLI `install.php` without `fresh` fails with duplicate-key; reseed only via web `?fresh=1`.
 - demo admin: `maileditorportfolio@gmail.com`/`776654` (live + seeded); customers `customer@demo.com`/`customer123`, `verified@demo.com`/`verified123`, `full@demo.com`/`full123`, `demo@auroracyber.com`/`demo12345`.
+
+## Live deployment & state (memorized)
+- Live: `https://aurora-cyber.infy.click` (InfinityFree). FTP `ftpupload.net`, user `if0_42779072`, pass `XUOQ8Cw7nU1`, docroot `/htdocs`. DB `sql202.infinityfree.com`, db `if0_42779072_aurora_cyber`, user `if0_42779072`, pass `XUOQ8Cw7nU1`.
+- Staging dir: `C:\Users\user\AppData\Local\Temp\opencode\deploy\aurora-cyber` (mirror of repo; source for FTP uploads and the Desktop zip `C:\Users\user\OneDrive\Desktop\aurora-cyber-deploy.zip`). Rebuild zip after any deploy change (exclude `__*` files).
+- Deploy loop: edit repo files → copy to staging → FTP put changed files → rebuild zip → commit+push. **ftp-sync compares only SIZE** — force-upload same-length edits.
+- Live HTTP tests MUST use Chrome + `puppeteer-core` (from `C:\Users\user\AppData\Local\Temp\opencode\chatdebug`) — InfinityFree anti-bot blocks curl. Login pages: admin `maileditorportfolio@gmail.com`/`776654`, customers as listed above.
+- Egress/SMTP source IP of server: `185.27.134.67` (whitelisted in Brevo).
+
+## Email/mail sending (fixed, working)
+- Gmail SMTP is the ONLY outbound route now (no Brevo relay — Brevo rewrote From to `@<id>.brevosend.com` because the sender isn't verified there).
+- `smtp.gmail.com` does NOT resolve on InfinityFree (DNS-blocked) → connect to pinned IP `173.194.41.109:587` with TLS `SNI peer_name=smtp.gmail.com`, `verify_peer_name=false` via `$mail->SMTPOptions` (in `includes/mailer.php`).
+- Secrets (`config.secrets.php`, git-ignored; staging/live use `SECRET_*` constants, local uses `putenv`): `MAIL_HOST=173.194.41.109`, `MAIL_HOST_SNI=smtp.gmail.com`, `MAIL_USER=maileditorportfolio@gmail.com`, `MAIL_PASS=wggrdyhsddxvkdaa` (Gmail App Password — Gmail revokes these without notice; on `535 BadCredentials` ask the user to regenerate at myaccount.google.com/apppasswords and swap).
+- Ladder in `send_mail()`: Brevo REST API (`BREVO_API_KEY`, currently 401-invalid — harmless, fast-fails) → Gmail SMTP → `mail()` → disk fallback `/storage/mailout`. Disk files = failed sends; if you see recent ones, mail is broken → check Gmail auth first.
+- `SITE_EMAIL=maileditorportfolio@gmail.com` (used by mailto/footer). Order emails, OTPs, admin alerts all deliver via Gmail SMTP.
+
+## Recently completed work
+1. Firewall-safe renames shipped (chat→support, order/create→order/submit, verify/send-otp→send, verify/confirm→check + admin renames); old blocked URLs deleted remotely.
+2. Root DB cause fixed: deployed `config.php` was stale pre-`ac_env` (APP_ENV=dev, DB_HOST=127.0.0.1) — now APP_ENV=prod, DB_HOST=sql202.
+3. Email now delivers (see above). Deployed/test probes were cleaned up.
+4. Mobile responsiveness fixed & verified 320/390/768/1024 clean (no overflow/zoom/pan) across home, account, admin pages:
+   - `index.php` `#order` + `admin/inc/head.php` `<main>` got `overflow-hidden` (aurora-blobs pushed pages past viewport; Chrome shrink-to-fit zoomed out).
+   - `admin/login.php` blobs wrapped in `absolute inset-0 overflow-hidden` (body-level overflow doesn't stop the zoom).
+   - `account/dashboard.php` orders table: `min-w-0` + `grid-cols-1` on its grid so `min-w-[560px]` table scrolls in-card (was 627px).
+   - Rebuilt `assets/css/tailwind.css` after adding those utilities (rebuild required whenever new classes are used).
+5. Footers updated site-wide: email `maileditorportfolio@gmail.com` (mailto), site `aurora-cyber.infy.click`, address `Mirpur, Dhaka-1215` on public + admin footers; WhatsApp is icon-only (`wa.me/8801977665421`); removed old `hello@auroracyber.com` and the visible `01977665421` text.
+
+## Remaining/known items
+- Live DB has test data: order #7 (`maileditorportfolio@gmail.com` mail-test), order #8 (`Payment request` was not delivered during the 535 outage — optional manual resend), earlier order #5 (`e2e-smoke…@example.com`), guest chat sessions. Cleanup via phpMyAdmin if desired.
+- Brevo REST API key is invalid (401) — left configured; if the user provides a working key AND verifies a Brevo sender, REST becomes primary. Otherwise leave as-is.
+- Any further blobs added to new sections must be inside a clipped parent (`overflow-hidden`) or they re-break mobile.
