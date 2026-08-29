@@ -10,6 +10,15 @@
 declare(strict_types=1);
 
 /* ------------------------------------------------------------------ *
+ *  LOCAL SECRETS (optional, git-ignored) — must load BEFORE the
+ *  constants below: putenv() values are picked up by getenv().
+ *  Copy config.secrets.php.example → config.secrets.php and fill in.
+ * ------------------------------------------------------------------ */
+if (is_file(__DIR__ . '/config.secrets.php')) {
+    require_once __DIR__ . '/config.secrets.php';
+}
+
+/* ------------------------------------------------------------------ *
  *  DATABASE (XAMPP defaults — root / empty password on 127.0.0.1:3306)
  * ------------------------------------------------------------------ */
 define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
@@ -25,15 +34,6 @@ define('DB_CHARSET', 'utf8mb4');
 define('SITE_NAME', 'Aurora Cyber');
 define('SITE_NAME_BN', 'অরোরা সাইবার');
 define('SITE_EMAIL', 'hello@auroracyber.com');
-
-/* ------------------------------------------------------------------ *
- *  LOCAL SECRETS (optional, git-ignored) — putenv() values win over
- *  everything below because getenv() is read later in this file.
- *  Copy config.secrets.php.example → config.secrets.php and fill in.
- * ------------------------------------------------------------------ */
-if (is_file(__DIR__ . '/config.secrets.php')) {
-    require_once __DIR__ . '/config.secrets.php';
-}
 
 /* ------------------------------------------------------------------ *
  *  BASE URL — auto detected. Override here if behind a proxy/vhost.
