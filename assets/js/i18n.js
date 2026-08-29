@@ -190,7 +190,7 @@
 
   // server-side DB overrides merge first (translations table)
   if (window.fetch) {
-    fetch('api/translations.php' + (location.search && location.search.indexOf('lng') > -1 ? '' : '')).then(function (r) { return r.json(); }).then(function (data) {
+    fetch((window.AURORA_BASE || '') + '/api/translations.php' + (location.search && location.search.indexOf('lng') > -1 ? '' : '')).then(function (r) { return r.json(); }).then(function (data) {
       if (data && data.ok && data.list) {
         data.list.forEach(function (row) {
           if (!DICT[row.dict_key]) DICT[row.dict_key] = {};

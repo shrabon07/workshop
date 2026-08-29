@@ -53,6 +53,7 @@ $v = version_time();
   </div>
 </footer>
 
+<script>window.AURORA_BASE = "<?= e(APP_BASE_URL) ?>";</script>
 <script defer src="<?= e(asset('js/i18n.js')) ?>?v=<?= $v ?>"></script>
 <script defer src="<?= e(asset('js/app.js')) ?>?v=<?= $v ?>"></script>
 <?php if (isset($LOAD_ORDER_JS)): ?>

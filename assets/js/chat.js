@@ -152,7 +152,7 @@
     payload.token = token();
     var fd = new FormData();
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
-    return fetch('api/chat.php', { method: 'POST', body: fd }).then(function (r) { return r.json(); });
+    return fetch((window.AURORA_BASE || '') + '/api/chat.php', { method: 'POST', body: fd }).then(function (r) { return r.json(); });
   }
 
   function openChat() {

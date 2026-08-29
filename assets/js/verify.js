@@ -85,7 +85,7 @@
     fd.append('channel', channel);
     fd.append('csrf_token', btn.getAttribute('data-csrf'));
 
-    fetch('api/verify/send-otp.php', { method: 'POST', body: fd })
+    fetch((window.AURORA_BASE || '') + '/api/verify/send-otp.php', { method: 'POST', body: fd })
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
       .then(function (res) {
         state[channel].pending = false;
@@ -128,7 +128,7 @@
     fd.append('code', code);
     fd.append('csrf_token', csrf);
 
-    fetch('api/verify/confirm.php', { method: 'POST', body: fd })
+    fetch((window.AURORA_BASE || '') + '/api/verify/confirm.php', { method: 'POST', body: fd })
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
       .then(function (res) {
         if (!res.ok || res.data.error) {
