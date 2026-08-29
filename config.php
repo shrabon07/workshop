@@ -44,7 +44,7 @@ define('DB_CHARSET', 'utf8mb4');
  * ------------------------------------------------------------------ */
 define('SITE_NAME', 'Aurora Cyber');
 define('SITE_NAME_BN', 'অরোরা সাইবার');
-define('SITE_EMAIL', 'hello@auroracyber.com');
+define('SITE_EMAIL', 'maileditorportfolio@gmail.com');
 
 /* ------------------------------------------------------------------ *
  *  BASE URL — auto detected. Override here if behind a proxy/vhost.
