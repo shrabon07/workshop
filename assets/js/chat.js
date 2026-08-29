@@ -242,6 +242,10 @@
     document.addEventListener('langchange', function () { renderAll(); });
   }
 
-  document.addEventListener('DOMContentLoaded', bind);
-  if (document.readyState === 'interactive' || document.readyState === 'complete') bind();
+  function start() { bind(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
 })();
