@@ -7,7 +7,7 @@
 
   var TOKEN_KEY = 'wc_chat_token';
   var polling = null, lastId = 0, open = false, botThinking = false;
-  var state = { bot_mode: 1, admin_taken: 0, suggestions: [] };
+  var state = { bot_mode: 1, admin_taken: 0, suggestions: [], need_name: 1, guest_name: '' };
   var rendered = []; // rendered message ids
 
   function $id(id) { return document.getElementById(id); }
@@ -87,11 +87,21 @@
       '      </div>' +
       '    </div>' +
       '    <div id="chat-messages" class="flex-1 overflow-y-auto nice-scroll px-4 py-4 flex flex-col gap-2.5 min-h-[240px]"></div>' +
+      '    <div id="chat-gate" class="hidden px-4 pb-3 min-h-[150px]">' +
+      '      <div class="glass-strong rounded-2xl p-4 flex flex-col gap-3">' +
+      '        <div class="text-sm font-bold text-white" data-i18n="chat_name_label">What should we call you?</div>' +
+      '        <div class="flex gap-2">' +
+      '          <input id="chat-name-input" class="input !rounded-xl !py-2.5 flex-1" placeholder="Your name" data-i18n-placeholder="chat_name_placeholder" autocomplete="off" maxlength="60">' +
+      '          <button id="chat-name-go" class="btn-teal !py-2.5 !px-4 rounded-xl shrink-0 whitespace-nowrap text-xs font-bold" type="button" data-i18n="chat_name_start">Start chat</button>' +
+      '        </div>' +
+      '        <div id="chat-name-err" class="hidden text-[11px] text-rose-300"></div>' +
+      '      </div>' +
+      '    </div>' +
       '    <div id="chat-typing" class="hidden px-4 pb-2 flex gap-1.5">' +
       '      <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>' +
       '    </div>' +
       '    <div id="chat-suggestions" class="px-4 pb-3 flex flex-wrap gap-2"></div>' +
-      '    <div class="border-t border-white/10 p-3 flex items-center gap-2 bg-slate-950/40">' +
+      '    <div id="chat-composer" class="border-t border-white/10 p-3 flex items-center gap-2 bg-slate-950/40">' +
       '      <input id="chat-input" class="input !rounded-xl !py-2.5" placeholder="Type your message…" data-i18n-placeholder="chat_placeholder" autocomplete="off">' +
       '      <button id="chat-send" class="btn-teal !p-3 !rounded-xl shrink-0" aria-label="Send">' +
       '        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>' +
@@ -140,6 +150,62 @@
     });
   }
 
+  function gateShow(show) {
+    var gate = $id('chat-gate');
+    var comp = $id('chat-composer');
+    var msgs = $id('chat-messages');
+    state.need_name = show ? 1 : 0;
+    if (gate) gate.classList.toggle('hidden', !show);
+    if (comp) comp.classList.toggle('hidden', show);
+    if (msgs) msgs.classList.toggle('hidden', show);
+    if (show && $id('chat-name-input')) {
+      setTimeout(function () { $id('chat-name-input').focus(); }, 250);
+    }
+  }
+
+  function apiSetName(name) {
+    var err = $id('chat-name-err');
+    if (err) err.classList.add('hidden');
+    name = (name || '').trim();
+    if (name.length < 2 || name.length > 60) {
+      if (err) {
+        err.textContent = I18N ? I18N.t('chat_name_error') : 'Please enter your name (2–60 characters).';
+        err.classList.remove('hidden');
+      }
+      return;
+    }
+    api('set_name', { name: name }).then(function (d) {
+      if (!d.ok) {
+        if (err) {
+          err.textContent = I18N ? I18N.t('chat_name_error') : 'Please enter your name (2–60 characters).';
+          err.classList.remove('hidden');
+        }
+        return;
+      }
+      state.guest_name = d.guest_name || name;
+      state.bot_mode = d.bot_mode; state.admin_taken = d.admin_taken;
+      lastId = 0; rendered = [];
+      append(d.messages);
+      gateShow(false);
+      var input = $id('chat-input');
+      if (input) setTimeout(function () { input.focus(); }, 200);
+      if (!polling) poll();
+    }).catch(function () {});
+  }
+
+  function updateGate(d) {
+    if (!d || d.need_name === undefined) return;
+    if (d.need_name) {
+      state.need_name = 1;
+      state.guest_name = d.guest_name || '';
+      gateShow(!state.guest_name);
+    } else {
+      state.need_name = 0;
+      state.guest_name = d.guest_name || '';
+      gateShow(false);
+    }
+  }
+
   function typing(show) {
     var t = $id('chat-typing');
     if (t) t.classList.toggle('hidden', !show);
@@ -162,7 +228,8 @@
       if (!d.ok) return;
       state.bot_mode = d.bot_mode; state.admin_taken = d.admin_taken;
       lastId = 0; rendered = [];
-      append(d.messages);
+      updateGate(d);
+      if (!state.need_name) append(d.messages);
       var box = $id('chat-messages');
       if (box) box.scrollTop = box.scrollHeight;
     }).catch(function () {
@@ -180,7 +247,8 @@
     api('read', { after: lastId })
       .then(function (d) {
         if (d.ok) {
-          append(d.messages);
+          updateGate(d);
+          if (!state.need_name) append(d.messages);
           state.bot_mode = d.bot_mode;
           state.admin_taken = d.admin_taken;
           if (d.admin_taken) rerenderSuggestions();
@@ -192,12 +260,14 @@
 
   function send(text) {
     text = (text || '').trim();
-    if (!text) return;
+    if (!text || state.need_name) return;
     var input = $id('chat-input');
     if (input) input.value = '';
     api('send', { message: text }).then(function (d) {
       typing(false);
       if (!d.ok) return;
+      updateGate(d);
+      if (state.need_name) return;
       append(d.messages);
       state.bot_mode = d.bot_mode;
       state.admin_taken = d.admin_taken;
@@ -236,6 +306,10 @@
     $id('chat-send').addEventListener('click', function () { send($id('chat-input').value); });
     $id('chat-input').addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(e.target.value); }
+    });
+    $id('chat-name-go').addEventListener('click', function () { apiSetName($id('chat-name-input').value); });
+    $id('chat-name-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); apiSetName(e.target.value); }
     });
     setInterval(poll, 2500);
     // re-render text keys when the user flips EN/BANGLA

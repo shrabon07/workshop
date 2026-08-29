@@ -25,6 +25,12 @@ function chat_token(bool $must = true): string
     return (string) $t;
 }
 
+/** Guests must give their name before chatting — 1 until the session has one. */
+function chat_need_name(array $row): int
+{
+    return (int) (trim((string) ($row['guest_name'] ?? '')) === '');
+}
+
 function chat_session(string $token): array
 {
     $row = DB::get('SELECT * FROM chat_sessions WHERE session_token = ?', [$token]);
@@ -33,10 +39,18 @@ function chat_session(string $token): array
         $id = DB::insert('chat_sessions', ['session_token' => $token, 'bot_mode' => 1, 'admin_taken' => 0, 'status' => 'open']);
         $row = DB::get('SELECT * FROM chat_sessions WHERE id = ?', [$id]);
     }
-    // attach / refresh created_at-less metadata each open
+    // attach / refresh created_at-less metadata each open; logged-in users are
+    // identified by their account, so they get a name automatically.
     if (is_logged_in() && empty($row['user_id'])) {
         DB::update('chat_sessions', ['user_id' => current_user_id()], 'id = ?', [$row['id']]);
         $row['user_id'] = current_user_id();
+    }
+    if (is_logged_in() && chat_need_name($row) && !empty($row['user_id'])) {
+        $u = DB::get('SELECT name FROM users WHERE id = ?', [(int) $row['user_id']]);
+        if (!empty($u['name'])) {
+            DB::update('chat_sessions', ['guest_name' => $u['name']], 'id = ?', [$row['id']]);
+            $row['guest_name'] = $u['name'];
+        }
     }
     $_SESSION['chat_token'] = $token;
     if ($isNew) {
@@ -61,9 +75,35 @@ function action_open(): void
     json_ok([
         'chat_id'  => (int) $s['id'],
         'token'    => $token,
+        'need_name' => chat_need_name($s),
+        'guest_name' => (string) ($s['guest_name'] ?? ''),
         'bot_mode' => (int) $s['bot_mode'],
         'admin_taken' => (int) $s['admin_taken'],
         'messages' => chat_messages((int) $s['id']),
+    ]);
+}
+
+function action_set_name(): void
+{
+    $token = chat_token(true);
+    $name  = trim((string) post('name'));
+    $name  = trim(preg_replace('/[\x00-\x1F\x7F]|<[^>]*>/', '', $name));
+    $len   = mb_strlen($name);
+    if ($len < 2 || $len > 60) {
+        json_error('Please enter your name (2–60 characters).', 422);
+    }
+    $s = DB::get('SELECT * FROM chat_sessions WHERE session_token = ?', [$token]);
+    if (!$s) {
+        $s = chat_session($token);
+    }
+    DB::update('chat_sessions', ['guest_name' => $name], 'id = ?', [(int) $s['id']]);
+    $s['guest_name'] = $name;
+    json_ok([
+        'need_name'  => 0,
+        'guest_name' => $name,
+        'bot_mode'   => (int) $s['bot_mode'],
+        'admin_taken' => (int) $s['admin_taken'],
+        'messages'   => chat_messages((int) $s['id']),
     ]);
 }
 
@@ -78,6 +118,16 @@ function action_send(): void
         json_error('Message too long.', 422);
     }
     $s = chat_session($token);
+    if (chat_need_name($s)) {
+        json_ok([
+            'need_name'  => 1,
+            'bot_mode'   => (int) $s['bot_mode'],
+            'admin_taken' => (int) $s['admin_taken'],
+            'messages'   => chat_messages((int) $s['id']),
+            'last_id'    => 0,
+        ]);
+        return;
+    }
     DB::insert('chat_messages', ['chat_id' => $s['id'], 'sender' => 'guest', 'message' => $msg]);
 
     $out = ['bot_mode' => (int) $s['bot_mode'], 'admin_taken' => (int) $s['admin_taken'], 'suggestions' => []];
@@ -110,6 +160,8 @@ function action_read(): void
     $last = count($msgs) ? (int) end($msgs)['id'] : $after;
     json_ok([
         'messages' => $msgs,
+        'need_name' => chat_need_name($s),
+        'guest_name' => (string) ($s['guest_name'] ?? ''),
         'bot_mode' => (int) $s['bot_mode'],
         'admin_taken' => (int) $s['admin_taken'],
         'last_id'  => $last,
@@ -118,6 +170,7 @@ function action_read(): void
 
 switch (get('action') ?: post('action')) {
     case 'open': action_open(); break;
+    case 'set_name': action_set_name(); break;
     case 'send': action_send(); break;
     case 'read': action_read(); break;
     default: json_error('Unknown action.', 404);

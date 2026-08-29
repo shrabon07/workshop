@@ -53,7 +53,7 @@ require_once __DIR__ . '/inc/head.php';
         ?>
         <button class="w-full text-left px-4 py-3.5 border-b border-white/5 hover:bg-white/5 transition-colors session-row <?= $s['id'] === $activeId ? 'bg-cyan-400/10' : '' ?>" data-chat-id="<?= (int) $s['id'] ?>">
           <div class="flex items-center justify-between gap-2">
-            <span class="font-bold text-slate-100 text-sm truncate"><?= e($s['user_name'] ?: 'Guest') ?></span>
+            <span class="font-bold text-slate-100 text-sm truncate"><?= e($s['user_name'] ?: ($s['guest_name'] ?: 'Guest')) ?></span>
             <span class="text-[10px] text-slate-500 shrink-0"><?= e(date('H:i', strtotime($s['updated_at']))) ?></span>
           </div>
           <div class="text-[11px] text-slate-500 mb-1.5"><?= e((int) $s['bot_mode'] ? '🤖 bot-mode' : ($s['admin_taken'] ? '👨‍💻 live admin' : '•••')) ?> · +<?= e($s['phone'] ?? '—') ?></div>
