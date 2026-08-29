@@ -272,3 +272,38 @@ body { transition: opacity .3s ease, transform .3s ease; }
 .pay-row-unpaid .pay-amt { color: #fb7185; }
 .pay-row-paid .pay-amt { color: #34d399; text-decoration: line-through; text-decoration-color: rgba(52,211,153,.4); }
 .pay-note { width: 100%; font-size: .78rem; color: #94a3b8; }
+
+/* ---------- floating scroll up/down dock (whole site) ---------- */
+.scroll-nav {
+  position: fixed;
+  left: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.scroll-nav-visible { opacity: 1; transform: none; pointer-events: auto; }
+.scroll-nav-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #a5f3fc;
+  background: rgba(15,23,42,.72);
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 30px -6px rgba(2,6,23,.55);
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease;
+}
+.scroll-nav-btn:hover { background: rgba(8,145,178,.92); color: #03201c; border-color: rgba(34,211,238,.5); }
+.scroll-nav-btn:active { transform: scale(.94); }
+.scroll-nav-btn:disabled { opacity: .32; cursor: default; }
+.scroll-nav-btn:disabled:hover { background: rgba(15,23,42,.72); color: #a5f3fc; border-color: rgba(255,255,255,.12); }

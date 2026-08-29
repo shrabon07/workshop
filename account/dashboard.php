@@ -14,7 +14,7 @@ $orders = DB::all('SELECT o.*, COALESCE(s.title_en, o.project_type) AS svc_en, C
                      LEFT JOIN services s ON s.id = o.service_id
                     WHERE o.user_id = ?
                     ORDER BY o.id DESC
-                    LIMIT 50', [$user['id']]);
+                    LIMIT 5', [$user['id']]);
 
 $chats = DB::all(
     'SELECT cs.*,
@@ -34,7 +34,7 @@ if ($ov === 'green' || $ov === 'grey') $ch['email'] = true;
 if ($ov === 'green') $ch['whatsapp'] = true;
 if ($ov === 'red') { $ch['email'] = false; $ch['whatsapp'] = false; }
 
-$notifs = user_notifications((int) $user['id'], 20);
+$notifs = user_notifications((int) $user['id'], 5);
 $unread = user_unread_count((int) $user['id']);
 
 $PAGE_TITLE = 'Dashboard — ' . SITE_NAME;
@@ -110,7 +110,7 @@ require_once __DIR__ . '/../includes/public-header.php';
         </h2>
       </div>
 
-      <?php $pays = customer_payment_requests((int) $user['id'], 30); ?>
+      <?php $pays = customer_payment_requests((int) $user['id'], 5); ?>
       <?php if (!$pays): ?>
         <div class="mt-6 text-center text-slate-400 py-8 glass-chip rounded-2xl">
           <span class="e">No payment requests yet. When admin sends one, it appears here.</span><span class="b">এখনো কোনো পেমেন্ট রিকোয়েস্ট নেই। এডমিন পাঠালে এখানে দেখাবে।</span>
