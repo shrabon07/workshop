@@ -235,3 +235,78 @@ function email_order_status_message(array $order, string $status): array
     $badge = $label . ' · Order ' . $number;
     return [$subject, $heading, $tagline, $body, $badge];
 }
+
+/**
+ * Branded payment email — $paid=false: a custom payment request from admin;
+ * $paid=true: confirmation that the payment was received and logged as paid.
+ * Returns [subject, heading, tagline, body, badge].
+ */
+function email_payment_message(array $order, float $amount, string $note = '', bool $paid = false): array
+{
+    $project = $order['project_type'] ?: 'your project';
+    $number  = '#' . (int) $order['id'];
+    $price   = price_fmt($amount);
+
+    if ($paid) {
+        $subject = 'Payment received — order ' . $number . ' — ' . SITE_NAME;
+        $heading = 'Payment received';
+        $tagline = 'Thank you — your project stays on track.';
+        $noteHtml = '';
+        $body = '<p>Hi ' . e($order['name']) . ',</p>
+<p>We received <strong style="color:#059669;">' . e($price) . '</strong> for <strong>' . e($project) . '</strong> (order ' . $number . '). Your payment is logged as <strong style="color:#34d399;">paid</strong> ✔</p>
+' . email_payment_facts($order, $price, true) . '
+<p>We will continue with your project without interruption — if we owe you anything, just say so.</p>
+' . email_button('Message us on WhatsApp', WHATSAPP_LINK) . '
+<p style="margin-top:14px;font-size:13px;color:#64748b;">Thanks for trusting ' . e(SITE_NAME) . '. — The team</p>';
+        $badge = 'Receipt · Order ' . $number;
+    } else {
+        $subject = 'Payment request — order ' . $number . ' — ' . SITE_NAME;
+        $heading = 'Payment request';
+        $tagline = 'Please complete your payment.';
+        $noteHtml = $note !== '' ? '<div style="background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;padding:12px 14px;border-radius:10px;color:#f8fafc;font-size:13px;margin:12px 0 0;">' . nl2br(e($note)) . '</div>' : '';
+        $body = '<p>Hi ' . e($order['name']) . ',</p>
+<p>A payment of <strong style="color:#f59e0b;">' . e($price) . '</strong> is requested for <strong>' . e($project) . '</strong> (order ' . $number . ').</p>
+' . email_payment_facts($order, $price, false) . $noteHtml . '
+<p>To complete your payment, message us on WhatsApp and we can arrange bKash / Nagad / bank transfer right away.</p>
+' . email_button('Pay via WhatsApp', WHATSAPP_LINK) . '
+<p style="margin-top:14px;font-size:13px;color:#64748b;">The payment request also shows on your account dashboard.</p>';
+        $badge = 'Payment · Order ' . $number;
+    }
+
+    return [$subject, $heading, $tagline, $body, $badge];
+}
+
+/** Facts row for payment emails (order + requested amount). */
+function email_payment_facts(array $order, string $price, bool $paid): string
+{
+    if ($paid) {
+        return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;border:1px solid rgba(255,255,255,.1);border-radius:14px;font-size:13px;overflow:hidden;">
+  <tr>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#94a3b8;width:130px;">Order number</td>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#f8fafc;font-weight:700;">#' . (int) $order['id'] . '</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.06);color:#94a3b8;width:130px;">Project type</td>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.06);color:#f8fafc;font-weight:700;">' . e($order['project_type'] ?: '—') . '</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#94a3b8;width:130px;">Amount paid</td>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#34d399;font-weight:800;">' . e($price) . '</td>
+  </tr>
+</table>';
+    }
+    return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;border:1px solid rgba(255,255,255,.1);border-radius:14px;font-size:13px;overflow:hidden;">
+  <tr>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#94a3b8;width:130px;">Order number</td>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#f8fafc;font-weight:700;">#' . (int) $order['id'] . '</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.06);color:#94a3b8;width:130px;">Project type</td>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.06);color:#f8fafc;font-weight:700;">' . e($order['project_type'] ?: '—') . '</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#94a3b8;width:130px;">Amount requested</td>
+    <td style="padding:10px 14px;background:rgba(255,255,255,.03);color:#f59e0b;font-weight:800;">' . e($price) . '</td>
+  </tr>
+</table>';
+}

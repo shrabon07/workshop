@@ -101,6 +101,47 @@ require_once __DIR__ . '/../includes/public-header.php';
       <?php endif; ?>
     </section>
 
+    <!-- PAYMENT REQUESTS -->
+    <section id="payments" class="mt-10 glass rounded-3xl p-6 grad-border scroll-mt-28">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="font-bold text-white flex items-center gap-2">
+          <span class="w-8 h-8 rounded-lg grid place-items-center text-sm bg-gradient-to-br from-brand-deep to-brand-light">💳</span>
+          <span class="e">Payment Requests</span><span class="b">পেমেন্ট রিকোয়েস্ট</span>
+        </h2>
+      </div>
+
+      <?php $pays = customer_payment_requests((int) $user['id'], 30); ?>
+      <?php if (!$pays): ?>
+        <div class="mt-6 text-center text-slate-400 py-8 glass-chip rounded-2xl">
+          <span class="e">No payment requests yet. When admin sends one, it appears here.</span><span class="b">এখনো কোনো পেমেন্ট রিকোয়েস্ট নেই। এডমিন পাঠালে এখানে দেখাবে।</span>
+        </div>
+      <?php else: ?>
+        <div class="mt-5 space-y-2.5">
+          <?php foreach ($pays as $pr): $paid = $pr['status'] === 'paid'; ?>
+            <div class="pay-row <?= $paid ? 'pay-row-paid' : 'pay-row-unpaid' ?>">
+              <div class="min-w-0">
+                <div class="font-bold text-slate-100 text-sm">
+                  #<?= (int) $pr['order_id'] ?>
+                  <span class="text-slate-400 font-semibold">· <?= e($pr['project_type'] ?: l('Custom', 'কাস্টম')) ?></span>
+                </div>
+                <div class="mt-0.5"><span class="pay-badge <?= $paid ? 'pay-paid' : 'pay-unpaid' ?>">
+                  <?= $paid ? '✔ ' . l('Paid', 'পরিশোধিত') : '⚡ ' . l('Unpaid', 'অপরিশোধিত') ?>
+                </span></div>
+              </div>
+              <span class="pay-amt"><?= e(price_fmt((float) $pr['amount'])) ?></span>
+              <?php if ($pr['note']): ?>
+                <div class="pay-note">💬 <?= e($pr['note']) ?></div>
+              <?php endif; ?>
+              <?php if (!$paid): ?>
+                <a href="<?= e(defined('WHATSAPP_LINK') ? WHATSAPP_LINK : '#') ?>" target="_blank" rel="noopener"
+                   class="btn-teal !py-2 !px-4 text-xs"><span class="e">Pay now</span><span class="b">এখনই পরিশোধ</span></a>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </section>
+
     <div class="mt-10 grid gap-6 lg:grid-cols-3">
 
       <!-- ORDERS -->

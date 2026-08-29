@@ -17,12 +17,14 @@ $navItems = [
     'services'   => ['url' => 'services.php',   'icon' => '▤', 'key' => 'a_services'],
     'categories' => ['url' => 'categories.php', 'icon' => '▦', 'key' => 'a_categories'],
     'orders'     => ['url' => 'orders.php',     'icon' => '◷', 'key' => 'a_orders'],
+    'payments'   => ['url' => 'payments.php',   'icon' => '💳', 'key' => 'a_payments'],
     'customers'  => ['url' => 'customers.php',  'icon' => '◉', 'key' => 'a_customers'],
     'chats'      => ['url' => 'chats.php',      'icon' => '✉', 'key' => 'a_chats'],
 ];
 
 $orderCount = (int) DB::value('SELECT COUNT(*) FROM orders WHERE status = "pending"');
 $chatCount  = (int) DB::value('SELECT COUNT(*) FROM chat_sessions WHERE status = "open"');
+$payCount   = unpaid_payment_request_count();
 ?><!doctype html>
 <html lang="en" class="lang-en">
 <head>
@@ -53,7 +55,7 @@ $chatCount  = (int) DB::value('SELECT COUNT(*) FROM chat_sessions WHERE status =
     <nav class="mt-8 space-y-1.5 flex-1">
       <?php foreach ($navItems as $key => $item):
           $isActive = $ACTIVE === $key;
-          $badge = $key === 'orders' && $orderCount ? $orderCount : ($key === 'chats' && $chatCount ? $chatCount : 0);
+          $badge = $key === 'orders' && $orderCount ? $orderCount : ($key === 'chats' && $chatCount ? $chatCount : ($key === 'payments' && $payCount ? $payCount : 0));
       ?>
         <a href="<?= e(url('admin/' . $item['url'])) ?>"
            class="nav-item <?= $isActive ? 'nav-item-active' : '' ?> flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all">

@@ -148,6 +148,7 @@
     a_services: { en: 'Services', bn: 'সার্ভিস' },
     a_categories: { en: 'Categories', bn: 'ক্যাটাগরি' },
     a_orders: { en: 'Orders', bn: 'অর্ডার' },
+    a_payments: { en: 'Payments', bn: 'পেমেন্ট' },
     a_customers: { en: 'Customers', bn: 'গ্রাহক' },
     a_chats: { en: 'Live Chats', bn: 'লাইভ চ্যাট' },
     a_site: { en: 'View site', bn: 'সাইট দেখুন' },

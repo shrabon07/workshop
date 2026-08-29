@@ -191,6 +191,26 @@ CREATE TABLE IF NOT EXISTS `app_notifications` (
   KEY `idx_user` (`user_id`, `is_read`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- PAYMENT REQUESTS  (admin sends a custom payment request per order;
+-- customer sees it on the dashboard; admin later marks it paid)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `payment_requests` (
+  `id`         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `order_id`   INT UNSIGNED    NOT NULL,
+  `user_id`    INT UNSIGNED    NOT NULL,
+  `amount`     DECIMAL(12,2)   NOT NULL,
+  `note`       TEXT            NULL,
+  `status`     ENUM('unpaid','paid') NOT NULL DEFAULT 'unpaid',
+  `created_at` DATETIME        NOT NULL,
+  `paid_at`    DATETIME        NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`, `status`, `id`),
+  KEY `idx_order` (`order_id`),
+  CONSTRAINT `fk_pr_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pr_user`  FOREIGN KEY (`user_id`)  REFERENCES `users`  (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================
