@@ -40,16 +40,17 @@ function chat_session(string $token): array
         $row = DB::get('SELECT * FROM chat_sessions WHERE id = ?', [$id]);
     }
     // attach / refresh created_at-less metadata each open; logged-in users are
-    // identified by their account, so they get a name automatically.
+    // identified by their account, so we always sync the customer name.
     if (is_logged_in() && empty($row['user_id'])) {
         DB::update('chat_sessions', ['user_id' => current_user_id()], 'id = ?', [$row['id']]);
         $row['user_id'] = current_user_id();
     }
-    if (is_logged_in() && chat_need_name($row) && !empty($row['user_id'])) {
+    if (is_logged_in() && !empty($row['user_id'])) {
         $u = DB::get('SELECT name FROM users WHERE id = ?', [(int) $row['user_id']]);
-        if (!empty($u['name'])) {
-            DB::update('chat_sessions', ['guest_name' => $u['name']], 'id = ?', [$row['id']]);
-            $row['guest_name'] = $u['name'];
+        $uname = trim((string) ($u['name'] ?? ''));
+        if ($uname !== '' && $uname !== (string) ($row['guest_name'] ?? '')) {
+            DB::update('chat_sessions', ['guest_name' => $uname], 'id = ?', [$row['id']]);
+            $row['guest_name'] = $uname;
         }
     }
     $_SESSION['chat_token'] = $token;

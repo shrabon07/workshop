@@ -40,7 +40,9 @@
     var cls = isGuest
       ? 'bg-gradient-to-br from-brand-deep to-brand-light text-slate-900 self-end rounded-2xl rounded-br-md'
       : 'glass-chip text-slate-200 self-start rounded-2xl rounded-bl-md';
-    var who = isGuest ? (I18N ? I18N.t('chat_you') : 'You') : (M.senderBadge(m.sender));
+    var who = isGuest
+      ? (state.guest_name || (I18N ? I18N.t('chat_you') : 'You'))
+      : (M.senderBadge(m.sender));
     return '<div class="flex flex-col max-w-[85%] ' + (isGuest ? 'items-end self-end' : 'items-start self-start') + '">' +
       '<span class="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">' + who + '</span>' +
       '<div class="px-4 py-2.5 text-sm whitespace-pre-line leading-relaxed ' + cls + '">' + escapeHTML(msgText(m.message)) + '</div>' +
@@ -79,7 +81,7 @@
       '        </span>' +
       '        <div class="flex-1 min-w-0">' +
       '          <div class="font-bold text-white text-sm leading-tight" data-i18n="chat_title">Aurora Assistant</div>' +
-      '          <div class="text-[11px] text-slate-400" data-i18n="chat_subtitle">Fast replies, Mon–Sat</div>' +
+      '          <div class="text-[11px] text-slate-400" id="chat-subtitle" data-i18n="chat_subtitle">Fast replies, Mon–Sat</div>' +
       '        </div>' +
       '        <button id="chat-min" class="glass-chip rounded-lg p-1.5 text-slate-400 hover:text-white transition-colors" aria-label="Minimize">' +
       '          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M5 12h14"/></svg>' +
@@ -203,6 +205,18 @@
       state.need_name = 0;
       state.guest_name = d.guest_name || '';
       gateShow(false);
+    }
+    updateHeaderName();
+  }
+
+  function updateHeaderName() {
+    var sub = $id('chat-subtitle');
+    if (!sub) return;
+    var name = state.guest_name;
+    if (name) {
+      var hello = I18N && I18N.lang === 'bn' ? 'হ্যালো' : 'Hi';
+      sub.textContent = hello + ', ' + name;
+      sub.removeAttribute('data-i18n');
     }
   }
 
