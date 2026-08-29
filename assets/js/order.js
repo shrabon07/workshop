@@ -85,12 +85,17 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    wireServiceCards();
-    wireForm();
-  });
-  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  /* Wire exactly once — this script is deferred (runs at 'interactive'), so the
+     immediate call already runs; the DOMContentLoaded fallback covers a
+     non-deferred include in <head>. Without the guard both would fire on every
+     submit and create a duplicate order. */
+  var wired = false;
+  function wire() {
+    if (wired) return;
+    wired = true;
     wireServiceCards();
     wireForm();
   }
+  document.addEventListener('DOMContentLoaded', wire);
+  if (document.readyState !== 'loading') wire();
 })();

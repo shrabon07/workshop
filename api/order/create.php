@@ -32,6 +32,22 @@ if ($serviceId) {
     }
 }
 
+// Idempotency guard: a double-tapped submit / network retry within a few
+// seconds must not create a second order with the exact same brief.
+$dup = DB::get(
+    'SELECT id FROM orders WHERE email = ? AND details = ? AND created_at >= ? ORDER BY id DESC LIMIT 1',
+    [$email, $details, date('Y-m-d H:i:s', time() - 10)]
+);
+if ($dup) {
+    json_ok([
+        'order_id'     => (int) $dup['id'],
+        'message_en'   => 'Your brief was received! We will contact you within 24 hours.',
+        'message_bn'   => 'আপনার ব্রিফটি আমরা পেয়েছি! ২৪ ঘণ্টার মধ্যে যোগাযোগ করা হবে।',
+        'whatsapp_url' => WHATSAPP_LINK,
+        'order_page'   => url('account/login.php?next=' . rawurlencode('account/dashboard.php')),
+    ]);
+}
+
 $orderId = DB::insert('orders', [
     'user_id'      => current_user_id(),
     'service_id'   => $serviceId,
