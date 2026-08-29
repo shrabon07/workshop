@@ -104,8 +104,9 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
     $usesLibrary = class_exists('PHPMailer\PHPMailer\PHPMailer');
     $hasSmtp     = MAIL_HOST !== '' && MAIL_USER !== '';
 
-    // Candidate SMTP routes, tried in order: primary (e.g. Gmail via pinned
-    // IP because InfinityFree DNS-blocks smtp.gmail.com) then a fallback relay.
+    // SMTP route: primary Mail host (Gmail via pinned IP, because InfinityFree
+    // DNS-blocks the smtp.gmail.com hostname). No third-party relay fallback —
+    // relays rewrite the From to their own domain (e.g. @<id>.brevosend.com).
     $smtpCandidates = [];
     if ($hasSmtp) {
         $smtpCandidates[] = [
@@ -115,16 +116,6 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
             'pass' => MAIL_PASS,
             'sec'  => MAIL_ENCRYPTION, // 'tls' / 'ssl' / ''
             'sni'  => defined('MAIL_HOST_SNI') ? MAIL_HOST_SNI : '',
-        ];
-    }
-    if (defined('MAIL_FALLBACK_HOST') && MAIL_FALLBACK_HOST !== '' && MAIL_FALLBACK_USER !== '') {
-        $smtpCandidates[] = [
-            'host' => MAIL_FALLBACK_HOST,
-            'port' => MAIL_FALLBACK_PORT,
-            'user' => MAIL_FALLBACK_USER,
-            'pass' => MAIL_FALLBACK_PASS,
-            'sec'  => MAIL_FALLBACK_ENCRYPTION,
-            'sni'  => '',
         ];
     }
 

@@ -116,13 +116,6 @@ define('MAIL_DEBUG', false);
  * DNS-blocks the smtp.gmail.com hostname, so we connect to its IP directly). */
 define('MAIL_HOST_SNI', ac_env('SECRET_MAIL_HOST_SNI', 'MAIL_HOST_SNI', ''));
 
-/* Secondary SMTP relay used if the primary route fails. */
-define('MAIL_FALLBACK_HOST', ac_env('SECRET_MAIL_FALLBACK_HOST', 'MAIL_FALLBACK_HOST', ''));
-define('MAIL_FALLBACK_PORT', (int) ac_env('SECRET_MAIL_FALLBACK_PORT', 'MAIL_FALLBACK_PORT', '587'));
-define('MAIL_FALLBACK_USER', ac_env('SECRET_MAIL_FALLBACK_USER', 'MAIL_FALLBACK_USER', ''));
-define('MAIL_FALLBACK_PASS', ac_env('SECRET_MAIL_FALLBACK_PASS', 'MAIL_FALLBACK_PASS', ''));
-define('MAIL_FALLBACK_ENCRYPTION', ac_env('SECRET_MAIL_FALLBACK_ENCRYPTION', 'MAIL_FALLBACK_ENCRYPTION', 'tls'));
-
 /* Brevo (Sendinblue) REST API key — HTTPS API path, not blocked by shared hosts
  * that forbid outbound SMTP. Leave empty to use SMTP/mail()/disk only. */
 define('BREVO_API_KEY', ac_env('SECRET_BREVO_API_KEY', 'BREVO_API_KEY', ''));
