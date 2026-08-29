@@ -27,11 +27,11 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 
           <!-- wordmark bar -->
           <tr>
-            <td style="background:linear-gradient(120deg,#0f766e,#14b8a6 55%,#0e7490);padding:22px 32px;">
+            <td style="background:linear-gradient(120deg,#0f766e,#14b8a6 55%,#0e7490);padding:20px 32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="font-size:26px;font-weight:800;letter-spacing:-.5px;color:#ffffff;">
-                    Aurora<span style="color:#99f6e4;">Cyber</span>
+                  <td style="font-size:26px;font-weight:800;letter-spacing:-.5px;color:#ffffff;vertical-align:middle;">
+                    ' . email_layout_logo($opts) . '
                   </td>
                   <td align="right" style="vertical-align:middle;">
                     <span style="font-size:11px;letter-spacing:2px;color:#ccfbf1;text-transform:uppercase;font-weight:600;">' . e($opts['badge'] ?? 'Update') . '</span>
@@ -83,6 +83,31 @@ function email_button(string $label, string $href): string
     </td>
   </tr>
 </table>';
+}
+
+/**
+ * Logo block: embedded icon + wordmark when a cid: logo is attached,
+ * falls back to a pure-text wordmark otherwise (offline/dev renders).
+ */
+function email_layout_logo(array $opts): string
+{
+    $cid = $opts['logo_cid'] ?? null;
+    if (!$cid) {
+        return 'Aurora<span style="color:#99f6e4;">Cyber</span>';
+    }
+    return
+'<img src="cid:' . e($cid) . '" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:11px;vertical-align:middle;margin-right:10px;">' .
+'<span style="vertical-align:middle;">Aurora</span><span style="color:#99f6e4;vertical-align:middle;">Cyber</span>';
+}
+
+/**
+ * Full list of inline images the layout expects, keyed by cid.
+ * Passed as the $embedded argument to send_mail().
+ */
+function email_layout_embeds(array $opts = []): array
+{
+    $cid = $opts['logo_cid'] ?? 'aurora_logo';
+    return [$cid => APP_PATH . '/assets/img/logo.png'];
 }
 
 function email_layout_footer(): string

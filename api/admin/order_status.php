@@ -31,7 +31,8 @@ if ($order['email'] && $status === 'delivered') {
         $order['email'],
         'Your project is delivered — ' . SITE_NAME,
         email_layout('Project delivered', $body, ['badge' => 'Order #' . $order['id'], 'tagline' => 'Your website is live.']),
-        'Your project (order #' . $order['id'] . ') has been delivered. Reply to this email or message us on WhatsApp.'
+        'Your project (order #' . $order['id'] . ') has been delivered. Reply to this email or message us on WhatsApp.',
+        email_layout_embeds()
     );
 }
 

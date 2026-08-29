@@ -27,8 +27,11 @@ class_exists('PHPMailer\PHPMailer\Exception'); // pre-load exception class
 
 /**
  * Sends an HTML email. Returns true on success (or when recorded to disk).
+ *
+ * $embedded = ['cidname' => '/absolute/path/to/image.png', ...] — attached as
+ * inline (cid:) images so <img src="cid:cidname"> renders in Gmail/Outlook.
  */
-function send_mail(string $to, string $subject, string $html, string $plain = ''): bool
+function send_mail(string $to, string $subject, string $html, string $plain = '', array $embedded = []): bool
 {
     if ($plain === '') {
         $plain = strip_tags((string) preg_replace('/<br\s*\/?>/i', "\n", $html));
@@ -61,6 +64,12 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
             $mail->isHTML(true);
             $mail->Body    = $html;
             $mail->AltBody = $plain;
+
+            foreach ($embedded as $cid => $file) {
+                if (is_file($file)) {
+                    $mail->addEmbeddedImage($file, $cid, basename($file));
+                }
+            }
 
             if ($mail->send()) {
                 return true;
