@@ -49,11 +49,11 @@ require_once __DIR__ . '/../includes/public-header.php';
             <div class="font-bold text-white"><?= l('Email verification', 'ইমেইল যাচাইকরণ') ?></div>
             <div class="text-xs text-slate-400"><?= e($user['email']) ?></div>
           </div>
-          <span id="email-done" class="badge <?= $v['email_verified'] ? 'text-emerald-950 bg-emerald-400' : 'hidden text-slate-400 glass-chip' ?>">✓ <?= l('Verified', 'যাচাইকৃত') ?></span>
+          <span id="email-done" class="badge <?= $verify['email_verified'] ? 'text-emerald-950 bg-emerald-400' : 'hidden text-slate-400 glass-chip' ?>">✓ <?= l('Verified', 'যাচাইকৃত') ?></span>
         </div>
-        <div class="mt-5 <?= $v['email_verified'] ? 'opacity-40 pointer-events-none' : '' ?>">
+        <div class="mt-5 <?= $verify['email_verified'] ? 'opacity-40 pointer-events-none' : '' ?>">
           <button type="button" data-verify-channel="email" data-csrf="<?= e(csrf_token()) ?>"
-                  class="btn-teal w-full !py-3" <?= $v['email_verified'] ? 'disabled' : '' ?>>
+                  class="btn-teal w-full !py-3" <?= $verify['email_verified'] ? 'disabled' : '' ?>>
             <span data-i18n="verify_email_btn">Send email code</span>
           </button>
           <div data-otp-wrap="email" class="hidden mt-4">
@@ -75,10 +75,10 @@ require_once __DIR__ . '/../includes/public-header.php';
             <div class="font-bold text-white"><?= l('WhatsApp verification', 'হোয়াটসঅ্যাপ যাচাইকরণ') ?></div>
             <div class="text-xs text-slate-400"><?= l('Click-to-chat code flow', 'ক্লিক-টু-চ্যাট কোড ফ্লো') ?></div>
           </div>
-          <span id="wa-done" class="badge <?= $v['whatsapp_verified'] ? 'text-emerald-950 bg-emerald-400' : 'hidden text-slate-400 glass-chip' ?>">✓ <?= l('Verified', 'যাচাইকৃত') ?></span>
+          <span id="wa-done" class="badge <?= $verify['whatsapp_verified'] ? 'text-emerald-950 bg-emerald-400' : 'hidden text-slate-400 glass-chip' ?>">✓ <?= l('Verified', 'যাচাইকৃত') ?></span>
         </div>
-        <div class="mt-5 <?= $v['whatsapp_verified'] ? 'opacity-40 pointer-events-none' : '' ?>">
-          <a data-verify-whatsapp data-csrf="<?= e(csrf_token()) ?>" href="#" class="btn w-full !py-3 text-white bg-gradient-to-r from-emerald-500 to-green-500 hover:shadow-[0_8px_40px_-10px_rgba(16,185,129,.6)] hover:-translate-y-0.5 transition-all <?= $v['whatsapp_verified'] ? 'pointer-events-none' : '' ?>">
+        <div class="mt-5 <?= $verify['whatsapp_verified'] ? 'opacity-40 pointer-events-none' : '' ?>">
+          <a data-verify-whatsapp data-csrf="<?= e(csrf_token()) ?>" href="#" class="btn w-full !py-3 text-white bg-gradient-to-r from-emerald-500 to-green-500 hover:shadow-[0_8px_40px_-10px_rgba(16,185,129,.6)] hover:-translate-y-0.5 transition-all <?= $verify['whatsapp_verified'] ? 'pointer-events-none' : '' ?>">
             <span data-i18n="verify_whatsapp_link">Send code on WhatsApp</span>
           </a>
           <div data-otp-wrap="whatsapp" class="hidden mt-4">
