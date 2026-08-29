@@ -88,28 +88,24 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 }
 
 /**
- * Logo block: embedded icon tile + wordmark when a cid: logo is attached,
- * falls back to the text wordmark otherwise (offline/dev renders).
+ * Logo block — a CSS-only render of the site favicon tile (gradient rounded
+ * square + the stylised A) so it shows in every mail client with no image
+ * attachment or remote URL required.
  */
 function email_layout_logo(array $opts): string
 {
-    $cid = $opts['logo_cid'] ?? 'aurora_logo';
-    $img = is_file(APP_PATH . '/assets/img/logo.png')
-        ? '<img src="cid:' . e($cid) . '" alt="" width="38" height="38" style="width:38px;height:38px;border-radius:10px;vertical-align:middle;margin-right:11px;">'
-        : '';
-    return $img .
+    unset($opts);
+    return
+'<table role="presentation" cellpadding="0" cellspacing="0" style="display:inline-table;vertical-align:middle;margin-right:11px;">
+  <tr>
+    <td width="38" height="38" align="center" valign="middle"
+        style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0f766e,#06b6d4);">
+      <span style="font-size:21px;line-height:38px;font-weight:800;color:#03201c;font-family:Georgia,serif;">A</span>
+    </td>
+  </tr>
+</table>' .
 '<span style="vertical-align:middle;">Aurora</span>' .
 '<span style="color:#22d3ee;vertical-align:middle;">Cyber</span>';
-}
-
-/**
- * Full list of inline images the layout expects, keyed by cid.
- * Passed as the $embedded argument to send_mail().
- */
-function email_layout_embeds(array $opts = []): array
-{
-    $cid = $opts['logo_cid'] ?? 'aurora_logo';
-    return [$cid => APP_PATH . '/assets/img/logo.png'];
 }
 
 /**
