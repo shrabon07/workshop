@@ -93,8 +93,8 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
  */
 function email_layout_logo(array $opts): string
 {
-    $cid = $opts['logo_cid'] ?? null;
-    $img = $cid
+    $cid = $opts['logo_cid'] ?? 'aurora_logo';
+    $img = is_file(APP_PATH . '/assets/img/logo.png')
         ? '<img src="cid:' . e($cid) . '" alt="" width="38" height="38" style="width:38px;height:38px;border-radius:10px;vertical-align:middle;margin-right:11px;">'
         : '';
     return $img .
