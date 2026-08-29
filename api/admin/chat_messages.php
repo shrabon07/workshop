@@ -8,7 +8,13 @@ if (!$chatId) {
     json_error('chat_id is required.');
 }
 
-$chat = DB::get('SELECT * FROM chat_sessions WHERE id = ?', [$chatId]);
+$chat = DB::get(
+    'SELECT s.*, u.name AS user_name, u.email AS user_email
+       FROM chat_sessions s
+       LEFT JOIN users u ON u.id = s.user_id
+      WHERE s.id = ?',
+    [$chatId]
+);
 if (!$chat) {
     json_error('Chat not found.', 404);
 }

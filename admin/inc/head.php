@@ -31,6 +31,7 @@ $chatCount  = (int) DB::value('SELECT COUNT(*) FROM chat_sessions WHERE status =
 <meta name="theme-color" content="#020617">
 <title><?= e($adminTitle) ?> · Aurora Cyber Admin</title>
 <link rel="icon" type="image/svg+xml" href="<?= e(url('assets/img/logo.svg')) ?>">
+<meta name="csrf" content="<?= e(csrf_token()) ?>">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Noto+Sans+Bengali:wght@400;500;700;800&display=swap">
 <link rel="stylesheet" href="<?= e(asset('css/tailwind.css')) ?>?v=<?= $v ?>">
 <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>?v=<?= $v ?>">

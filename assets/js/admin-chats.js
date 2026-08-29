@@ -37,7 +37,8 @@
     var tag = isAdmin ? '🗣' : (isBot ? '🤖' : m.sender.toUpperCase());
     var body = m.message;
     if (body !== null && String(body).indexOf('::') === 0) {
-      body = String(body) === '::chat_taken::' ? 'Admin took over this chat.' : String(body);
+      var key = String(body).slice(2, -2);
+      body = (window.I18N && I18N.t(key)) ? I18N.t(key) : ('(auto: ' + key + ')');
     }
     return '<div class="flex ' + (isAdmin ? 'justify-end' : 'justify-start') + '"><div class="ab ' + cls + '">' +
       '<div class="text-[10px] uppercase tracking-wider opacity-60 mb-1">' + esc(tag) + ' · ' + esc(timeAgo(m.created_at)) + '</div>' +
@@ -51,7 +52,7 @@
   }
 
   function loadSessions() {
-    fetch('api/admin/chat_list.php').then(function (r) { return r.json(); }).then(function (d) {
+    fetch((window.AURORA_BASE || '') + '/api/admin/chat_list.php').then(function (r) { return r.json(); }).then(function (d) {
       if (d.ok) renderSessions(d.chats || []);
     }).catch(function () {});
   }
@@ -62,14 +63,16 @@
     replyInput.disabled = false;
     replyForm.querySelector('[type=submit]').disabled = false;
     document.querySelectorAll('.session-row').forEach(function (b) { b.classList.toggle('bg-cyan-400/10', Number(b.getAttribute('data-chat-id')) === id); });
-    fetch('api/admin/chat_messages.php?chat_id=' + id).then(function (r) { return r.json(); }).then(function (d) {
+    fetch((window.AURORA_BASE || '') + '/api/admin/chat_messages.php?chat_id=' + id).then(function (r) { return r.json(); }).then(function (d) {
       if (!d.ok) return;
       var c = d.chat;
       headLabel.innerHTML = esc(c.user_name || 'Guest') + '<span class="text-[11px] text-slate-400 font-normal ml-2">+' + esc(c.phone || '—') + ' · ' + (Number(c.bot_mode) ? 'bot' : 'manual') + '</span>';
-      takeoverBtn.innerHTML = Number(c.admin_taken) ? 'Release to bot / বটে ছেড়ে দিন' : 'Take over / নিয়ন্ত্রণ নিন';
-      takeoverBtn.setAttribute('data-chat-id', id);
-      takeoverBtn.setAttribute('data-action', Number(c.admin_taken) ? 'release' : 'takeover');
-      takeoverBtn.classList.remove('hidden');
+      if (takeoverBtn) {
+        takeoverBtn.innerHTML = Number(c.admin_taken) ? 'Release to bot / বটে ছেড়ে দিন' : 'Take over / নিয়ন্ত্রণ নিন';
+        takeoverBtn.setAttribute('data-chat-id', id);
+        takeoverBtn.setAttribute('data-action', Number(c.admin_taken) ? 'release' : 'takeover');
+        takeoverBtn.classList.remove('hidden');
+      }
       lastCount = (d.messages || []).length;
       msgBox.innerHTML = (d.messages || []).map(bubble).join('') || '<div class="text-slate-500 text-sm py-8 text-center">No messages yet.</div>';
       msgBox.scrollTop = msgBox.scrollHeight;
@@ -78,8 +81,9 @@
 
   function pollActive() {
     if (!activeId) return;
-    fetch('api/admin/chat_messages.php?chat_id=' + activeId).then(function (r) { return r.json(); }).then(function (d) {
-      if (!d.ok || Number(d.chat.user_id) !== lastUser) return;
+    var reqId = activeId;
+    fetch((window.AURORA_BASE || '') + '/api/admin/chat_messages.php?chat_id=' + reqId).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok || reqId !== activeId) return;
       var ms = d.messages || [];
       if (ms.length !== lastCount) {
         lastCount = ms.length;
@@ -89,11 +93,9 @@
     }).catch(function () {});
   }
 
-  var lastUser = 0;
-
   sessionsBox.addEventListener('click', function (e) {
     var row = e.target.closest('.session-row');
-    if (row) { lastUser = -1; openChat(Number(row.getAttribute('data-chat-id'))); setTimeout(function(){ lastUser = activeId; }, 400); }
+    if (row) openChat(Number(row.getAttribute('data-chat-id')));
   });
 
   replyForm.addEventListener('submit', function (e) {
@@ -118,7 +120,7 @@
     }).catch(function () { btn.disabled = false; A.toast('Network error', 'error'); });
   });
 
-  takeoverBtn.addEventListener('click', function () {
+  if (takeoverBtn) takeoverBtn.addEventListener('click', function () {
     var self = takeoverBtn;
     if (!self.getAttribute('data-chat-id')) return;
     self.disabled = true;
@@ -129,7 +131,6 @@
           self.setAttribute('data-action', Number(d.admin_taken) ? 'release' : 'takeover');
           self.innerHTML = Number(d.admin_taken) ? 'Release to bot / বটে ছেড়ে দিন' : 'Take over / নিয়ন্ত্রণ নিন';
           openChat(activeId);
-          if (d.action === 'takeover') { lastUser = activeId; }
           A.toast(d.action === 'takeover' ? 'You took over' : 'Bot resumed', 'success');
         } else A.toast(d.error || 'Action failed', 'error');
       })
@@ -139,5 +140,5 @@
   loadSessions();
   setInterval(loadSessions, 5000);
   setInterval(pollActive, 4000);
-  if (activeId) { lastUser = activeId; }
+  if (activeId) { openChat(activeId); }
 })();

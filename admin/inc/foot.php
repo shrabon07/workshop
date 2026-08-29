@@ -13,6 +13,7 @@ $v = version_time();
 <!-- toast mount -->
 <div id="toast-mount" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] flex flex-col gap-2 items-center pointer-events-none"></div>
 
+<script>window.AURORA_BASE = "<?= e(APP_BASE_URL) ?>";</script>
 <script defer src="<?= e(asset('js/i18n.js')) ?>?v=<?= $v ?>"></script>
 <script defer src="<?= e(asset('js/admin.js')) ?>?v=<?= $v ?>"></script>
 <?php if (isset($LOAD_ADMIN_SERVICES)): ?>

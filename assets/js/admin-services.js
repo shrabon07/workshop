@@ -51,7 +51,7 @@
       if (status) params.set('status', status);
       if (qv) params.set('q', qv);
       if (cat) params.set('category_id', cat);
-      fetch('api/admin/get_services.php?' + params.toString()).then(function (r) { return r.json(); }).then(function (d) {
+      fetch((window.AURORA_BASE || '') + '/api/admin/get_services.php?' + params.toString()).then(function (r) { return r.json(); }).then(function (d) {
         if (!d.ok) return;
         try {
           var rows = d.services.map(function (s) {
@@ -225,7 +225,7 @@
       var fd = new FormData();
       fd.append('file', file);
       fd.append('csrf_token', A.csrf);
-      fetch('api/admin/upload.php', { method: 'POST', body: fd }).then(function (r) { return r.json(); }).then(cb).catch(function () { A.toast('Upload error', 'error'); });
+      fetch((window.AURORA_BASE || '') + '/api/admin/upload.php', { method: 'POST', body: fd }).then(function (r) { return r.json(); }).then(cb).catch(function () { A.toast('Upload error', 'error'); });
     }
 
     // ---- save ----
@@ -258,7 +258,7 @@
       var btn = form.querySelector('[type=submit]');
       btn.disabled = true;
       btn.textContent = 'Saving…';
-      fetch('api/admin/' + (id ? 'update_service.php' : 'create_service.php'), { method: 'POST', body: fd })
+      fetch((window.AURORA_BASE || '') + '/api/admin/' + (id ? 'update_service.php' : 'create_service.php'), { method: 'POST', body: fd })
         .then(function (r) { return r.json(); })
         .then(function (d) {
           btn.disabled = false; btn.textContent = 'Save / সংরক্ষণ';
@@ -319,6 +319,10 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function () { initList(); initForm(); initCategories(); });
-  if (document.readyState === 'interactive' || document.readyState === 'complete') { initList(); initForm(); initCategories(); }
+  function bootAdminServices() { initList(); initForm(); initCategories(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootAdminServices);
+  } else {
+    bootAdminServices();
+  }
 })();

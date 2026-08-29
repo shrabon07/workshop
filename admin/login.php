@@ -84,6 +84,7 @@ $v = version_time();
   </div>
 </div>
 
+<script>window.AURORA_BASE = "<?= e(APP_BASE_URL) ?>";</script>
 <script defer src="<?= e(asset('js/i18n.js')) ?>?v=<?= $v ?>"></script>
 </body>
 </html>

@@ -69,7 +69,7 @@ function verify_csrf(?string $token = null): bool
 function csrf_require(): void
 {
     if (!verify_csrf()) {
-        json_error('Invalid security token. Please refresh the page.', 419);
+        json_error('Invalid security token. Please refresh the page.', 403);
     }
 }
 

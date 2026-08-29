@@ -39,16 +39,16 @@
       Object.keys(data || {}).forEach(function (k) { fd.append(k, data[k]); });
     }
     fd.append('csrf_token', CSRF);
-    return fetch(url, { method: 'POST', body: fd }).then(function (r) { return r.json(); });
+    return fetch((window.AURORA_BASE || '') + '/' + String(url).replace(/^\/+/, ''), { method: 'POST', body: fd }).then(function (r) { return r.json(); });
   }
 
   window.Admin = { toast: toast, modal: modal, post: post, csrf: CSRF };
 
   /* mobile sidebar toggle fallback (link-based, no JS needed) */
-  document.addEventListener('DOMContentLoaded', function () {
-    if (window.I18N) I18N.apply(false);
-  });
-  if (document.readyState === 'interactive' || document.readyState === 'complete') {
-    if (window.I18N) I18N.apply(false);
+  function applyLang() { if (window.I18N) I18N.apply(false); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyLang);
+  } else {
+    applyLang();
   }
 })();

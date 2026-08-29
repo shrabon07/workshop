@@ -74,19 +74,17 @@ require_once __DIR__ . '/inc/head.php';
     <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3 flex-wrap">
       <div id="chat-head-label" class="font-bold text-white text-sm">
         <?php if ($activeChat): ?>
-          <?= e($activeChat['user_name'] ?: 'Guest') ?>
+          <?= e($activeChat['user_name'] ?? $activeChat['guest_name'] ?? 'Guest') ?>
           <span class="text-[11px] text-slate-400 font-normal ml-2">+<?= e($activeChat['phone'] ?? '—') ?> · <?= e((int) $activeChat['bot_mode'] ? 'bot' : 'manual') ?></span>
         <?php else: ?>
           <?= l('Select a conversation', 'একটি কথোপকথন নির্বাচন করুন') ?>
         <?php endif; ?>
       </div>
-      <?php if ($activeChat): ?>
       <div class="flex gap-2">
-        <button id="takeover-btn" class="btn-ghost !py-2 !px-4 text-xs" data-chat-id="<?= (int) $activeChat['id'] ?>" data-action="<?= (int) $activeChat['admin_taken'] ? 'release' : 'takeover' ?>">
-          <?= (int) $activeChat['admin_taken'] ? l('Release to bot', 'বটে ছেড়ে দিন') : l('Take over', 'নিয়ন্ত্রণ নিন') ?>
+        <button id="takeover-btn" class="btn-ghost !py-2 !px-4 text-xs <?= $activeChat ? '' : 'hidden' ?>" data-chat-id="<?= $activeChat ? (int) $activeChat['id'] : '' ?>" data-action="<?= $activeChat && (int) $activeChat['admin_taken'] ? 'release' : 'takeover' ?>">
+          <?= $activeChat && (int) $activeChat['admin_taken'] ? l('Release to bot', 'বটে ছেড়ে দিন') : l('Take over', 'নিয়ন্ত্রণ নিন') ?>
         </button>
       </div>
-      <?php endif; ?>
     </div>
 
     <div id="chat-messages" class="flex-1 overflow-y-auto nice-scroll px-5 py-4 space-y-3">
