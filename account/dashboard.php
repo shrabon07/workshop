@@ -27,6 +27,13 @@ $chats = DB::all(
 
 $tick = verification_tick($user);
 
+/* effective per-channel verification — admin override wins over raw flags */
+$ov = $tick['record']['admin_override'] ?? 'none';
+$ch = ['email' => (bool) $tick['record']['email_verified'], 'whatsapp' => (bool) $tick['record']['whatsapp_verified']];
+if ($ov === 'green' || $ov === 'grey') $ch['email'] = true;
+if ($ov === 'green') $ch['whatsapp'] = true;
+if ($ov === 'red') { $ch['email'] = false; $ch['whatsapp'] = false; }
+
 $notifs = user_notifications((int) $user['id'], 20);
 $unread = user_unread_count((int) $user['id']);
 
@@ -147,19 +154,26 @@ require_once __DIR__ . '/../includes/public-header.php';
           <div class="mt-5 space-y-3 text-sm">
             <div class="flex items-center justify-between glass-chip rounded-xl px-4 py-3">
               <span class="text-slate-300"><?= l('Email', 'ইমেইল') ?></span>
-              <span class="badge <?= $tick['record']['email_verified'] ? 'text-emerald-950 bg-emerald-400' : 'text-slate-400 glass-chip' ?>">
-                <?= $tick['record']['email_verified'] ? '✔ ' . l('Verified', 'যাচাইকৃত') : '❌ ' . l('Pending', 'বাকি') ?>
+              <span class="badge <?= $ch['email'] ? 'text-emerald-950 bg-emerald-400' : 'text-slate-400 glass-chip' ?>">
+                <?= $ch['email'] ? '✔ ' . l('Verified', 'যাচাইকৃত') : '❌ ' . l('Pending', 'বাকি') ?>
               </span>
             </div>
             <div class="flex items-center justify-between glass-chip rounded-xl px-4 py-3">
               <span class="text-slate-300"><?= l('WhatsApp', 'হোয়াটসঅ্যাপ') ?></span>
-              <span class="badge <?= $tick['record']['whatsapp_verified'] ? 'text-emerald-950 bg-emerald-400' : 'text-slate-400 glass-chip' ?>">
-                <?= $tick['record']['whatsapp_verified'] ? '✔ ' . l('Verified', 'যাচাইকৃত') : '❌ ' . l('Pending', 'বাকি') ?>
+              <span class="badge <?= $ch['whatsapp'] ? 'text-emerald-950 bg-emerald-400' : 'text-slate-400 glass-chip' ?>">
+                <?= $ch['whatsapp'] ? '✔ ' . l('Verified', 'যাচাইকৃত') : '❌ ' . l('Pending', 'বাকি') ?>
               </span>
             </div>
-            <a href="<?= e(url('account/verify.php')) ?>" class="btn-accent w-full !py-2.5 text-xs">
-              <span data-i18n="dash_verify_cta">Complete verification</span>
-            </a>
+            <?php if ($ov !== 'none'): ?>
+              <p class="text-xs text-cyan-300/90 pt-1">🛠 <?= l('Set manually by admin', 'এডমিন ম্যানুয়ালি সেট করেছেন') ?></p>
+            <?php endif; ?>
+            <?php if ($ch['email'] && $ch['whatsapp']): ?>
+              <div class="mt-3"><span class="badge text-emerald-950 bg-emerald-400">✔ <?= l('Fully verified', 'সম্পূর্ণ যাচাইকৃত') ?></span></div>
+            <?php else: ?>
+              <a href="<?= e(url('account/verify.php')) ?>" class="btn-accent w-full !py-2.5 text-xs">
+                <span data-i18n="dash_verify_cta">Complete verification</span>
+              </a>
+            <?php endif; ?>
           </div>
         </div>
 
