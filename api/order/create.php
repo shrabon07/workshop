@@ -47,6 +47,7 @@ $orderId = DB::insert('orders', [
 // Fire-and-forget branded confirmation email (never blocks the response).
 $orderRow = [
     'id'           => $orderId,
+    'user_id'      => current_user_id(),
     'name'         => $name,
     'email'        => $email,
     'phone'        => $phone,
@@ -70,6 +71,9 @@ $body = '<p>Hi ' . e($name) . ',</p>
 
 <p style="margin-top:16px;">In a hurry, or just like chatting?</p>
 ' . email_button('Message us on WhatsApp', WHATSAPP_LINK);
+
+/* In-app "order received" notification for logged-in customers. */
+notify_order_status($orderRow, 'pending');
 
 if (current_user_id()) {
     $body .= '<p style="margin-top:14px;font-size:13px;color:#64748b;">You can track this order anytime from your <a href="' . e(url('account/dashboard.php')) . '" style="color:#0f766e;">customer dashboard</a>.</p>';

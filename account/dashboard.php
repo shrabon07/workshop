@@ -27,6 +27,9 @@ $chats = DB::all(
 
 $tick = verification_tick($user);
 
+$notifs = user_notifications((int) $user['id'], 20);
+$unread = user_unread_count((int) $user['id']);
+
 $PAGE_TITLE = 'Dashboard — ' . SITE_NAME;
 require_once __DIR__ . '/../includes/public-header.php';
 ?>
@@ -40,11 +43,56 @@ require_once __DIR__ . '/../includes/public-header.php';
         <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold text-white"><span data-i18n="dash_greeting">Hello</span>, <?= e(explode(' ', $user['name'])[0]) ?> 👋</h1>
       </div>
       <div class="flex items-center gap-3">
+        <a href="#notifications" class="relative p-2.5 glass-chip rounded-xl hover:text-cyan-300 transition-colors" aria-label="Notifications">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/></svg>
+          <span id="dash-notif-count" <?= $unread > 0 ? '' : 'style="display:none"' ?>><?= $unread ?></span>
+        </a>
         <span class="badge text-white border border-white/10 bg-white/5"><?= e($user['email']) ?></span>
         <span id="dash-tick" class="badge border border-white/10 bg-white/5 <?= e($tick['key'] === 'red' ? 'text-rose-400' : ($tick['key'] === 'grey' ? 'text-slate-300' : 'text-emerald-400')) ?>"><?= e($tick['icon']) ?> <?= l($tick['label_en'], $tick['label_bn']) ?></span>
         <a href="logout.php" class="btn-ghost !py-2 !px-4 text-xs"><span data-i18n="nav_logout">Sign out</span></a>
       </div>
     </div>
+
+    <!-- NOTIFICATIONS -->
+    <section id="notifications" class="mt-10 glass rounded-3xl p-6 grad-border scroll-mt-28">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="font-bold text-white flex items-center gap-2">
+          <span class="w-8 h-8 rounded-lg grid place-items-center text-sm bg-gradient-to-br from-brand-deep to-brand-light">🔔</span>
+          <span class="e">Notifications</span><span class="b">নোটিফিকেশন</span>
+          <?php if ($unread > 0): ?>
+            <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300"><?= $unread ?> <span class="e">new</span><span class="b">নতুন</span></span>
+          <?php endif; ?>
+        </h2>
+        <?php if ($notifs): ?>
+          <button type="button" id="dash-notif-markall" class="btn-ghost !py-2 !px-3.5 text-xs">
+            <span class="e">Mark all as read</span><span class="b">সব read করুন</span>
+          </button>
+        <?php endif; ?>
+      </div>
+
+      <?php if (!$notifs): ?>
+        <div class="mt-6 text-center text-slate-400 py-8 glass-chip rounded-2xl">
+          <span class="e">No notifications yet — status changes on your orders will appear here.</span><span class="b">এখনো কোনো নোটিফিকেশন নেই — আপনার অর্ডারের অবস্থা বদলালে এখানে দেখাবে।</span>
+        </div>
+      <?php else: ?>
+        <div class="mt-5 space-y-2 max-h-[420px] overflow-y-auto nice-scroll pr-1">
+          <?php foreach ($notifs as $n): ?>
+            <a href="<?= e($n['link'] ?: '#notifications') ?>" data-notif="<?= (int) $n['id'] ?>" class="notif-item <?= $n['is_read'] ? 'notif-read' : 'notif-unread' ?> block rounded-xl px-4 py-3 <?= $n['is_read'] ? 'opacity-80' : '' ?>">
+              <div class="flex items-start gap-3">
+                <span class="notif-dot mt-1.5 w-2 h-2 rounded-full shrink-0"></span>
+                <div class="min-w-0 flex-1">
+                  <div class="notif-title font-semibold text-sm"><?= l($n['title_en'], $n['title_bn']) ?></div>
+                  <?php if ($n['body_en']): ?>
+                    <p class="mt-0.5 text-xs text-slate-400"><?= l($n['body_en'], $n['body_bn']) ?></p>
+                  <?php endif; ?>
+                  <span class="mt-1 inline-block text-[11px] text-slate-500 font-semibold uppercase tracking-wide"><?= e(ago($n['created_at'])) ?></span>
+                </div>
+              </div>
+            </a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </section>
 
     <div class="mt-10 grid gap-6 lg:grid-cols-3">
 
@@ -143,3 +191,59 @@ require_once __DIR__ . '/../includes/public-header.php';
   </div>
 </main>
 <?php require_once __DIR__ . '/../includes/public-footer.php'; ?>
+<script>
+/* customer notifications — mark read + unread badge refresh */
+(function () {
+  'use strict';
+  var BASE = window.AURORA_BASE || '';
+
+  function refreshCount() {
+    fetch(BASE + '/api/notifications.php?action=count').then(function (r) { return r.json(); }).then(function (d) {
+      var el = document.getElementById('dash-notif-count');
+      if (!el) return;
+      var n = d && d.ok ? (d.unread || 0) : 0;
+      el.textContent = n;
+      el.style.display = n > 0 ? '' : 'none';
+      var chip = document.getElementById('dash-notif-chip');
+      if (chip) chip.remove();
+      if (n > 0) {
+        var h = document.querySelector('#notifications h2');
+        var c = document.createElement('span');
+        c.id = 'dash-notif-chip';
+        c.className = 'text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300';
+        c.textContent = n + (document.documentElement.className.indexOf('lang-bn') > -1 ? ' নতুন' : ' new');
+        h && h.appendChild(c);
+      }
+    }).catch(function () {});
+  }
+
+  function markRead(el) {
+    el.classList.remove('notif-unread', 'opacity-80');
+    el.classList.add('notif-read');
+    el.style.opacity = '.8';
+  }
+
+  document.querySelectorAll('[data-notif]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      var id = el.getAttribute('data-notif');
+      if (el.classList.contains('notif-unread')) {
+        markRead(el);
+        fetch(BASE + '/api/notifications.php?action=read&id=' + id).then(function (r) { return r.json(); }).then(refreshCount).catch(function () {});
+      }
+      e.preventDefault();
+    });
+  });
+
+  var markAll = document.getElementById('dash-notif-markall');
+  if (markAll) {
+    markAll.addEventListener('click', function () {
+      fetch(BASE + '/api/notifications.php?action=read_all').then(function (r) { return r.json(); }).then(function () {
+        document.querySelectorAll('[data-notif]').forEach(markRead);
+        refreshCount();
+      }).catch(function () {});
+    });
+  }
+
+  refreshCount();
+})();
+</script>

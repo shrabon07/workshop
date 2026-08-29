@@ -172,6 +172,25 @@ CREATE TABLE IF NOT EXISTS `translations` (
   UNIQUE KEY `uq_tr_key` (`dict_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- APP NOTIFICATIONS  (in-app alerts shown on the customer dashboard)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `app_notifications` (
+  `id`         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id`    INT             NOT NULL,
+  `type`       VARCHAR(40)     NOT NULL DEFAULT 'order_status',
+  `ref_id`     INT             DEFAULT NULL,
+  `title_en`   VARCHAR(190)    NOT NULL,
+  `title_bn`   VARCHAR(190)    NOT NULL DEFAULT '',
+  `body_en`    TEXT,
+  `body_bn`    TEXT,
+  `link`       VARCHAR(255)    NOT NULL DEFAULT '',
+  `is_read`    TINYINT(1)      NOT NULL DEFAULT 0,
+  `created_at` DATETIME        NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`, `is_read`, `id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================

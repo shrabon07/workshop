@@ -17,7 +17,9 @@ if (!$order) {
 
 DB::update('orders', ['status' => $status, 'updated_at' => date('Y-m-d H:i:s')], 'id = ?', [$id]);
 
-/* Send a branded status email to the client on EVERY admin update. */
+/* In-app notification for the customer (dashboard bell) + branded email. */
+notify_order_status($order, $status);
+
 if ($order['email']) {
     [$subject, $heading, $tagline, $body, $badge] = email_order_status_message($order, $status);
     send_mail(
