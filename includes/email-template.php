@@ -1,14 +1,15 @@
 <?php
 /**
  * Aurora Cyber branded email wrapping.
- * All transactional mail is rendered inside this layout so every message
- * carries the same logo bar, palette, contact footer and safe unsubscribe/opt-out line.
+ * Mirrors the site design system (tailwind.config.js + app.css):
+ *   ink-950 canvas #020617 · glass cards #0f172a · brand #0f766e→#06b6d4
+ *   accent #6366f1→#a855f7 · neon-teal glow · Outfit font.
  */
-
 function email_layout(string $heading, string $bodyHtml, array $opts = []): string
 {
     $siteName = $opts['site_name'] ?? SITE_NAME;
     $tagline  = $opts['tagline']  ?? 'Websites, e-commerce & SaaS for growing businesses.';
+    $badge    = $opts['badge']    ?? 'Update';
     $footer   = $opts['footer']   ?? email_layout_footer();
 
     return
@@ -19,50 +20,66 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>' . e($siteName) . '</title>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:Outfit,Segoe UI,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:28px 12px;">
+<body style="margin:0;padding:0;background:#020617;font-family:Outfit,Segoe UI,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#020617;padding:32px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 8px 30px rgba(2,6,23,.08);">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
-          <!-- wordmark bar -->
+          <!-- faint aurora glow behind the card -->
           <tr>
-            <td style="background:linear-gradient(120deg,#0f766e,#14b8a6 55%,#0e7490);padding:20px 32px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <td style="padding:0 0 10px;border-radius:22px;background:linear-gradient(135deg,rgba(6,182,212,.5),rgba(255,255,255,.06) 40%,rgba(168,85,247,.45));">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;background:#0b1220;border-radius:21px;">
+
+                <!-- wordmark bar (same as site nav: tile logo + white Aurora + gradient Cyber) -->
                 <tr>
-                  <td style="font-size:26px;font-weight:800;letter-spacing:-.5px;color:#ffffff;vertical-align:middle;">
-                    ' . email_layout_logo($opts) . '
-                  </td>
-                  <td align="right" style="vertical-align:middle;">
-                    <span style="font-size:11px;letter-spacing:2px;color:#ccfbf1;text-transform:uppercase;font-weight:600;">' . e($opts['badge'] ?? 'Update') . '</span>
+                  <td style="padding:26px 30px 18px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size:24px;font-weight:800;letter-spacing:-.5px;color:#ffffff;vertical-align:middle;">
+                          ' . email_layout_logo($opts) . '
+                        </td>
+                        <td align="right" style="vertical-align:middle;">
+                          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:#c4b5fd;background:rgba(99,102,241,.16);border:1px solid rgba(168,85,247,.35);padding:5px 10px;border-radius:999px;">' . e($badge) . '</span>
+                        </td>
+                      </tr>
+                    </table>
+                    <div style="font-size:12px;color:#64748b;margin-top:6px;">' . e($tagline) . '</div>
                   </td>
                 </tr>
+
+                <!-- divider -->
+                <tr>
+                  <td style="padding:0 30px;">
+                    <div style="border-top:1px solid rgba(255,255,255,.08);"></div>
+                  </td>
+                </tr>
+
+                <!-- heading -->
+                <tr>
+                  <td style="padding:26px 30px 6px;">
+                    <h1 style="margin:0;font-size:22px;color:#f8fafc;font-weight:800;letter-spacing:-.3px;">' . e($heading) . '</h1>
+                  </td>
+                </tr>
+
+                <!-- body -->
+                <tr>
+                  <td style="padding:12px 30px 26px;font-size:14px;line-height:1.7;color:#cbd5e1;">' . $bodyHtml . '</td>
+                </tr>
+
+                <!-- footer -->
+                <tr>
+                  <td style="padding:0 30px 28px;">
+                    <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:18px;font-size:12px;line-height:1.9;color:#64748b;">' . $footer . '</div>
+                  </td>
+                </tr>
+
               </table>
-              <div style="font-size:12px;color:#a7f3d0;margin-top:2px;">' . e($tagline) . '</div>
-            </td>
-          </tr>
-
-          <!-- heading -->
-          <tr>
-            <td style="padding:32px 32px 8px;">
-              <h1 style="margin:0;font-size:22px;color:#0f172a;font-weight:800;">' . e($heading) . '</h1>
-            </td>
-          </tr>
-
-          <!-- body -->
-          <tr>
-            <td style="padding:14px 32px 26px;font-size:14px;line-height:1.7;color:#334155;">' . $bodyHtml . '</td>
-          </tr>
-
-          <!-- footer -->
-          <tr>
-            <td style="padding:0 32px 28px;">
-              <div style="border-top:1px solid #e2e8f0;padding-top:18px;font-size:12px;line-height:1.8;color:#64748b;">' . $footer . '</div>
             </td>
           </tr>
 
         </table>
-        <p style="font-size:11px;color:#94a3b8;margin:14px 0 0;">You are receiving this because you reached out to ' . e($siteName) . '. If you didn`t request it, you can safely ignore this email.</p>
+        <p style="font-size:11px;color:#475569;margin:16px 0 0;">You are receiving this because you reached out to ' . e($siteName) . '. If you didn`t request it, you can safely ignore this email.</p>
       </td>
     </tr>
   </table>
@@ -71,33 +88,18 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 }
 
 /**
- * Small styled action button, safe for email clients.
- */
-function email_button(string $label, string $href): string
-{
-    return
-'<table role="presentation" cellpadding="0" cellspacing="0" style="margin:10px 0 4px;">
-  <tr>
-    <td align="center" style="border-radius:12px;background:linear-gradient(120deg,#0f766e,#0e7490);">
-      <a href="' . e($href) . '" style="display:inline-block;padding:12px 26px;color:#ffffff;font-size:14px;font-weight:700;border-radius:12px;text-decoration:none;">' . e($label) . '</a>
-    </td>
-  </tr>
-</table>';
-}
-
-/**
- * Logo block: embedded icon + wordmark when a cid: logo is attached,
- * falls back to a pure-text wordmark otherwise (offline/dev renders).
+ * Logo block: embedded icon tile + wordmark when a cid: logo is attached,
+ * falls back to the text wordmark otherwise (offline/dev renders).
  */
 function email_layout_logo(array $opts): string
 {
     $cid = $opts['logo_cid'] ?? null;
-    if (!$cid) {
-        return 'Aurora<span style="color:#99f6e4;">Cyber</span>';
-    }
-    return
-'<img src="cid:' . e($cid) . '" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:11px;vertical-align:middle;margin-right:10px;">' .
-'<span style="vertical-align:middle;">Aurora</span><span style="color:#99f6e4;vertical-align:middle;">Cyber</span>';
+    $img = $cid
+        ? '<img src="cid:' . e($cid) . '" alt="" width="38" height="38" style="width:38px;height:38px;border-radius:10px;vertical-align:middle;margin-right:11px;">'
+        : '';
+    return $img .
+'<span style="vertical-align:middle;">Aurora</span>' .
+'<span style="color:#22d3ee;vertical-align:middle;">Cyber</span>';
 }
 
 /**
@@ -110,19 +112,47 @@ function email_layout_embeds(array $opts = []): array
     return [$cid => APP_PATH . '/assets/img/logo.png'];
 }
 
+/**
+ * Small styled action button (btn-teal), safe for email clients.
+ */
+function email_button(string $label, string $href): string
+{
+    return
+'<table role="presentation" cellpadding="0" cellspacing="0" style="margin:10px 0 4px;">
+  <tr>
+    <td align="center" style="border-radius:14px;background:linear-gradient(90deg,#0f766e,#06b6d4);box-shadow:0 8px 40px -8px rgba(15,118,110,.55);">
+      <a href="' . e($href) . '" style="display:inline-block;padding:12px 26px;color:#020617;font-size:14px;font-weight:800;border-radius:14px;text-decoration:none;">' . e($label) . '</a>
+    </td>
+  </tr>
+</table>';
+}
+
 function email_layout_footer(): string
 {
     $whatsapp = defined('WHATSAPP_LINK') ? WHATSAPP_LINK : '#';
     $mail     = defined('SITE_EMAIL') ? SITE_EMAIL : '';
     return
-'<span style="font-weight:700;color:#0f172a;">Aurora Cyber</span> — Dhaka, Bangladesh<br>
-<a href="mailto:' . e($mail) . '" style="color:#0f766e;">' . e($mail) . '</a> · ' .
-'<a href="' . e($whatsapp) . '" style="color:#0f766e;">WhatsApp</a><br>
-© ' . date('Y') . ' ' . e(SITE_NAME) . '. All rights reserved.';
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding-bottom:10px;">
+      <span style="font-size:14px;font-weight:800;color:#f8fafc;">Aurora</span><span style="font-size:14px;font-weight:800;color:#22d3ee;">Cyber</span>
+    </td>
+  </tr>
+  <tr>
+    <td style="color:#64748b;">Dhaka, Bangladesh<br>
+      <a href="mailto:' . e($mail) . '" style="color:#06b6d4;text-decoration:none;">' . e($mail) . '</a> · ' .
+      '<a href="' . e($whatsapp) . '" style="color:#06b6d4;text-decoration:none;">WhatsApp</a>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding-top:8px;color:#475569;font-size:11px;">© ' . date('Y') . ' ' . e(SITE_NAME) . '. All rights reserved.</td>
+  </tr>
+</table>';
 }
 
 /**
- * Row of order facts used by both order confirmation and status emails.
+ * Row of order facts used by both order confirmation and status emails
+ * (glass-chip style: slate-900/50 + 1px white/10 border).
  */
 function email_order_facts(array $order): string
 {
@@ -136,22 +166,25 @@ function email_order_facts(array $order): string
     if (!empty($order['phone'])) {
         $rows['Phone'] = e($order['phone']);
     }
-    $out = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;border:1px solid #e2e8f0;border-radius:12px;font-size:13px;">';
+    $out = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;border:1px solid rgba(255,255,255,.1);border-radius:14px;font-size:13px;overflow:hidden;">';
+    $i = 0;
     foreach ($rows as $k => $v) {
+        $bg = $i % 2 === 1 ? 'background:rgba(255,255,255,.03);' : 'background:rgba(255,255,255,.06);';
         $out .= '<tr>' .
-                '<td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;color:#64748b;width:120px;">' . e($k) . '</td>' .
-                '<td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;color:#0f172a;font-weight:700;">' . $v . '</td>' .
+                '<td style="padding:10px 14px;color:#94a3b8;width:130px;' . $bg . '">' . e($k) . '</td>' .
+                '<td style="padding:10px 14px;color:#f8fafc;font-weight:700;' . $bg . '">' . $v . '</td>' .
                 '</tr>';
+        $i++;
     }
     $out .= '</table>';
     return $out;
 }
 
-/** Recap of the submitted brief (details) for confirmation emails. */
+/** Recap of the submitted brief (details) — cyan accent block. */
 function email_brief_block(string $details): string
 {
     if ($details === '') {
         return '';
     }
-    return '<div style="background:#f8fafc;border-left:3px solid #14b8a6;padding:12px 14px;border-radius:8px;color:#334155;font-size:13px;font-style:italic;margin:12px 0 0;">' . nl2br(e($details)) . '</div>';
+    return '<div style="background:rgba(6,182,212,.08);border-left:3px solid #06b6d4;padding:12px 14px;border-radius:10px;color:#e2e8f0;font-size:13px;font-style:italic;margin:12px 0 0;">' . nl2br(e($details)) . '</div>';
 }
