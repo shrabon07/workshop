@@ -60,6 +60,21 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* generic inline spinner for admin action buttons */
+[data-loading] { pointer-events: none; }
+[data-loading]::after {
+  content: '';
+  width: 13px;
+  height: 13px;
+  margin-left: 8px;
+  border: 2px solid rgba(148,163,184,.45);
+  border-top-color: #94a3b8;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: -2px;
+  animation: spin .6s linear infinite;
+}
+
 /* modal */
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 90;
