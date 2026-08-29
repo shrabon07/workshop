@@ -36,8 +36,11 @@ require_once __DIR__ . '/inc/head.php';
 ?>
 <div class="glass-strong rounded-3xl p-6">
   <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-    <p class="text-sm text-slate-400"><?= l('Manually verify a customer, edit their details, delete an account, or send one-off / bulk emails.', 'গ্রাহককে ম্যানুয়ালি যাচাই করুন, তথ্য সম্পাদনা করুন, অ্যাকাউন্ট মুছুন, বা একক / বাল্ক ইমেইল পাঠান।') ?></p>
+    <p class="text-sm text-slate-400"><?= l('Add a customer, manually verify them, edit details, delete an account, or send one-off / bulk emails.', 'কাস্টমার যোগ করুন, ম্যানুয়ালি যাচাই করুন, তথ্য সম্পাদনা করুন, অ্যাকাউন্ট মুছুন, বা একক / বাল্ক ইমেইল পাঠান।') ?></p>
     <div class="flex flex-wrap gap-2 w-full lg:w-auto justify-start lg:justify-end">
+      <button type="button" id="btn-add-customer" class="btn-teal !py-2.5 !px-4 text-xs">
+        <span class="e">+ Add customer</span><span class="b">+ কাস্টমার যোগ করুন</span>
+      </button>
       <button type="button" id="btn-bulk-email" class="btn-accent !py-2.5 !px-4 text-xs">
         <span class="e">Email all customers</span><span class="b">সব কাস্টমারে ইমেইল</span>
       </button>
