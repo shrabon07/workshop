@@ -88,17 +88,19 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
 }
 
 /**
- * Logo block — real site logo loaded over https (EMAIL_LOGO_URL), rendered
- * over a gradient-tile cell so the header never collapses if a client hides
- * remote images.
+ * Logo block — the exact homepage asset (logo.svg) via <picture>, with the
+ * SVG source for Apple Mail and a PNG fallback (raster of the same file)
+ * for Gmail/Outlook/Android. Rendered over a gradient-tile cell so the
+ * header never collapses if a client hides remote images.
  */
 function email_layout_logo(array $opts): string
 {
     unset($opts);
-    $img = EMAIL_LOGO_URL !== ''
-        ? '<img src="' . e(EMAIL_LOGO_URL) . '" alt="Aurora Cyber" width="38" height="38"
-           style="display:block;width:38px;height:38px;border:0;border-radius:11px;">'
-        : '<span style="font-size:21px;line-height:38px;font-weight:800;color:#03201c;font-family:Georgia,serif;">A</span>';
+    $img = '<picture>' .
+            (EMAIL_LOGO_URL !== '' ? '<source type="image/svg+xml" srcset="' . e(EMAIL_LOGO_URL) . '">' : '') .
+            '<img src="' . e(EMAIL_LOGO_PNG_URL) . '" alt="Aurora Cyber" width="38" height="38"
+             style="display:block;width:38px;height:38px;border:0;border-radius:11px;">' .
+           '</picture>';
     return
 '<table role="presentation" cellpadding="0" cellspacing="0" style="display:inline-table;vertical-align:middle;margin-right:11px;">
   <tr>

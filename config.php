@@ -101,10 +101,13 @@ define('MAIL_PASS', getenv('MAIL_PASS') ?: '');
 define('MAIL_ENCRYPTION', getenv('MAIL_ENCRYPTION') ?: 'tls');
 define('MAIL_DEBUG', false);
 
-/* Public logo URL used inside branded emails (Gmail block cid images by
- * policy; an https URL renders everywhere). Override per deployment:
- *   putenv('EMAIL_LOGO_URL=https://yourdomain.com/assets/img/logo.png'); */
-define('EMAIL_LOGO_URL', getenv('EMAIL_LOGO_URL') ?: 'https://raw.githubusercontent.com/shrabon07/workshop/main/assets/img/logo.png');
+/* Public logo URLs used inside branded emails. They mirror the exact asset the
+ * homepage renders (assets/img/logo.*). An SVG is shown by Apple Mail via the
+ * <picture> source; PNG covers Gmail/Outlook/Android. Override per deployment:
+ *   putenv('EMAIL_LOGO_URL=https://yourdomain.com/assets/img/logo.svg');
+ *   putenv('EMAIL_LOGO_PNG_URL=https://yourdomain.com/assets/img/logo.png'); */
+define('EMAIL_LOGO_URL', getenv('EMAIL_LOGO_URL') ?: 'https://raw.githubusercontent.com/shrabon07/workshop/main/assets/img/logo.svg');
+define('EMAIL_LOGO_PNG_URL', getenv('EMAIL_LOGO_PNG_URL') ?: 'https://raw.githubusercontent.com/shrabon07/workshop/main/assets/img/logo.png');
 
 /* Real SMTP configured → the verification code lands in the inbox, so the
  * on-screen dev_reveal shortcut is only shown while delivery is offline. */
