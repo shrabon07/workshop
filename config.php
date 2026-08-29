@@ -84,7 +84,7 @@ define('UPLOAD_URL', APP_BASE_URL . '/uploads');
  *  CONTACT
  *  WhatsApp in international format WITHOUT "+" (BD: 8801XXXXXXXXX)
  * ------------------------------------------------------------------ */
-define('WHATSAPP_NUMBER', '8801712345678');          // ← replace with the real number
+define('WHATSAPP_NUMBER', '8801977665421');
 define('WHATSAPP_LINK', 'https://wa.me/' . WHATSAPP_NUMBER);
 
 /* ------------------------------------------------------------------ *

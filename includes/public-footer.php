@@ -41,6 +41,7 @@ $ver = version_time();
         <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('') . '#order') ?>"><span data-i18n="nav_order">Start a project</span></a></li>
         <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('account/register.php')) ?>"><span data-i18n="nav_register">Create account</span></a></li>
         <li><a class="hover:text-cyan-300 transition-colors" href="mailto:<?= e(SITE_EMAIL) ?>">hello@auroracyber.com</a></li>
+        <li><a class="hover:text-cyan-300 transition-colors" href="tel:+8801977665421">01977665421</a></li>
       </ul>
     </div>
   </div>
