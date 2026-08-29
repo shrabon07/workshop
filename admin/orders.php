@@ -46,7 +46,7 @@ require_once __DIR__ . '/inc/head.php';
       </div>
     </div>
     <form method="get" class="flex gap-2 w-full lg:w-auto">
-      <input name="q" class="input !py-2.5 lg:w-64" value="<?= e($q) ?>" placeholder="<?= l('Search client or service…', 'ক্লায়েন্ট বা সার্ভিস খুঁজুন…') ?>">
+      <input name="q" class="input !py-2.5 lg:w-64" value="<?= e($q) ?>" placeholder="<?= e(l_attr('Search client or service…', 'ক্লায়েন্ট বা সার্ভিস খুঁজুন…')) ?>">
       <button class="btn-ghost !py-2.5 !px-4 text-xs shrink-0">Go</button>
     </form>
   </div>

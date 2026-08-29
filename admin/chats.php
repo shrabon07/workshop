@@ -98,7 +98,7 @@ require_once __DIR__ . '/inc/head.php';
 
     <div class="p-4 border-t border-white/10 bg-white/[.03]">
       <form id="reply-form" class="flex gap-2 items-end">
-        <textarea id="reply-input" rows="1" class="input !rounded-2xl flex-1 resize-none" placeholder="<?= l('Write a reply… (Send takes over from bot)', 'উত্তর লিখুন… (পাঠান বট থেকে নিয়ন্ত্রণ নেবে)') ?>" <?= $activeChat ? 'data-chat-id="' . (int) $activeChat['id'] . '"' : 'disabled' ?>></textarea>
+        <textarea id="reply-input" rows="1" class="input !rounded-2xl flex-1 resize-none" placeholder="<?= e(l_attr('Write a reply… (Send takes over from bot)', 'উত্তর লিখুন… (পাঠান বট থেকে নিয়ন্ত্রণ নেবে)')) ?>" <?= $activeChat ? 'data-chat-id="' . (int) $activeChat['id'] . '"' : 'disabled' ?>></textarea>
         <button type="submit" class="btn-teal !py-3.5 !px-5 text-xs shrink-0" <?= $activeChat ? '' : 'disabled' ?>>➤</button>
       </form>
     </div>

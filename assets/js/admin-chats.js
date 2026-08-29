@@ -19,11 +19,13 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function timeAgo(stamp) { return String(stamp).slice(11, 16); }
 
+  function whoName(s) { return s.user_name || s.guest_name || 'Guest'; }
+
   function sessionRow(s) {
     var sym = s.last_sender === 'admin' ? '▸' : (s.last_sender === 'bot' ? '●' : '◂');
     var lm = s.last_message !== null && String(s.last_message).indexOf('::') === 0 ? '(i18n auto msg)' : s.last_message;
     return '<button class="w-full text-left px-4 py-3.5 border-b border-white/5 hover:bg-white/5 transition-colors session-row ' + (s.id === activeId ? 'bg-cyan-400/10' : '') + '" data-chat-id="' + s.id + '">' +
-      '<div class="flex items-center justify-between gap-2"><span class="font-bold text-slate-100 text-sm truncate">' + esc(s.user_name || 'Guest') + '</span>' +
+      '<div class="flex items-center justify-between gap-2"><span class="font-bold text-slate-100 text-sm truncate">' + esc(whoName(s)) + '</span>' +
       '<span class="text-[10px] text-slate-500 shrink-0">' + esc(timeAgo(s.updated_at)) + '</span></div>' +
       '<div class="text-[11px] text-slate-500 mb-1.5">' + (Number(s.bot_mode) ? '🤖 bot-mode' : (Number(s.admin_taken) ? '👨\u200d💻 live admin' : '•••')) + ' · +' + esc(s.phone || '—') + '</div>' +
       '<div class="flex justify-between items-center gap-2"><span class="truncate text-xs ' + (Number(s.unread) ? 'text-slate-200 font-semibold' : 'text-slate-500') + '"><span class="mr-1">' + sym + '</span>' + esc((lm || '').slice(0, 46)) + '</span>' +
@@ -66,7 +68,7 @@
     fetch((window.AURORA_BASE || '') + '/api/admin/chat_messages.php?chat_id=' + id).then(function (r) { return r.json(); }).then(function (d) {
       if (!d.ok) return;
       var c = d.chat;
-      headLabel.innerHTML = esc(c.user_name || 'Guest') + '<span class="text-[11px] text-slate-400 font-normal ml-2">+' + esc(c.phone || '—') + ' · ' + (Number(c.bot_mode) ? 'bot' : 'manual') + '</span>';
+      headLabel.innerHTML = esc(whoName(c)) + '<span class="text-[11px] text-slate-400 font-normal ml-2">+' + esc(c.phone || '—') + ' · ' + (Number(c.bot_mode) ? 'bot' : 'manual') + '</span>';
       if (takeoverBtn) {
         takeoverBtn.innerHTML = Number(c.admin_taken) ? 'Release to bot / বটে ছেড়ে দিন' : 'Take over / নিয়ন্ত্রণ নিন';
         takeoverBtn.setAttribute('data-chat-id', id);

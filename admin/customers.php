@@ -39,7 +39,7 @@ require_once __DIR__ . '/inc/head.php';
   <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
     <p class="text-sm text-slate-400"><?= l('Override wins over the automatic verification result. Grey = ✓ (both verified).', 'ম্যানুয়াল ওভাররাইড অটো ফলাফলের উপর প্রাধান্য পায়। সবুজ = ✔ (উভয় ভেরিফাইড)।') ?></p>
     <form method="get" class="flex gap-2 w-full lg:w-auto">
-      <input name="q" class="input !py-2.5 lg:w-64" value="<?= e($q) ?>" placeholder="<?= l('Search name / email / phone…', 'নাম / ইমেইল / ফোন খুঁজুন…') ?>">
+      <input name="q" class="input !py-2.5 lg:w-64" value="<?= e($q) ?>" placeholder="<?= e(l_attr('Search name / email / phone…', 'নাম / ইমেইল / ফোন খুঁজুন…')) ?>">
       <button class="btn-ghost !py-2.5 !px-4 text-xs shrink-0">Go</button>
     </form>
   </div>

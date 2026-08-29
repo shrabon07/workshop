@@ -91,6 +91,16 @@ function l(string $en, string $bn = ''): string
     return '<span class="e">' . e($en) . '</span><span class="b">' . e($bn) . '</span>';
 }
 
+/**
+ * Plain-text version of l() — safe inside HTML attributes (placeholder/title).
+ * Escaped by callers via e() as usual.
+ */
+function l_attr(string $en, string $bn = ''): string
+{
+    $bn = $bn === '' ? $en : $bn;
+    return active_lang() === 'bn' ? $bn : $en;
+}
+
 /** Current language from cookie/localStorage fallback (server side hint). */
 function active_lang(): string
 {
