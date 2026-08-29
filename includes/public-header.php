@@ -5,7 +5,7 @@ if (!defined('APP_PATH')) {
 }
 $PAGE_TITLE = $PAGE_TITLE ?? (SITE_NAME . ' — Web Development Agency');
 $PAGE_DESC  = $PAGE_DESC ?? 'Fast, modern, conversion-focused websites for Bangladeshi businesses — e-commerce, SaaS, portfolios. Bilingual EN/বাংলা.';
-$v = version_time();
+$ver = version_time();
 ?><!doctype html>
 <html lang="en" class="lang-en">
 <head>
@@ -18,8 +18,8 @@ $v = version_time();
 <link rel="icon" type="image/svg+xml" href="<?= e(url('assets/img/logo.svg')) ?>">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Noto+Sans+Bengali:wght@400;500;700;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Noto+Sans+Bengali:wght@400;500;700;800&display=swap">
-<link rel="stylesheet" href="<?= e(asset('css/tailwind.css')) ?>?v=<?= $v ?>">
-<link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>?v=<?= $v ?>">
+<link rel="stylesheet" href="<?= e(asset('css/tailwind.css')) ?>?v=<?= $ver ?>">
+<link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>?v=<?= $ver ?>">
 </head>
 <body class="bg-slate-950 text-slate-300 min-h-screen">
 <div id="site-nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-500 border-b border-transparent">

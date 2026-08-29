@@ -27,6 +27,15 @@ define('SITE_NAME_BN', 'অরোরা সাইবার');
 define('SITE_EMAIL', 'hello@auroracyber.com');
 
 /* ------------------------------------------------------------------ *
+ *  LOCAL SECRETS (optional, git-ignored) — putenv() values win over
+ *  everything below because getenv() is read later in this file.
+ *  Copy config.secrets.php.example → config.secrets.php and fill in.
+ * ------------------------------------------------------------------ */
+if (is_file(__DIR__ . '/config.secrets.php')) {
+    require_once __DIR__ . '/config.secrets.php';
+}
+
+/* ------------------------------------------------------------------ *
  *  BASE URL — auto detected. Override here if behind a proxy/vhost.
  * ------------------------------------------------------------------ */
 if (!defined('APP_BASE_URL')) {
@@ -92,11 +101,14 @@ define('MAIL_PASS', getenv('MAIL_PASS') ?: '');
 define('MAIL_ENCRYPTION', getenv('MAIL_ENCRYPTION') ?: 'tls');
 define('MAIL_DEBUG', false);
 
+/* Real SMTP configured → the verification code lands in the inbox, so the
+ * on-screen dev_reveal shortcut is only shown while delivery is offline. */
+define('DEV_REVEAL_OTP', !(MAIL_HOST !== '' && MAIL_USER !== ''));
+
 /* ------------------------------------------------------------------ *
  *  SECURITY & BEHAVIOUR
  * ------------------------------------------------------------------ */
 define('APP_ENV', getenv('APP_ENV') ?: 'dev');
-define('DEV_REVEAL_OTP', true);          // show the OTP on screen when SMTP is not configured
 define('OTP_TTL_MINUTES', 10);           // minutes an OTP stays valid
 define('OTP_RESEND_SECONDS', 60);        // cooldown before re-sending
 

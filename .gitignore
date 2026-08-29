@@ -13,6 +13,9 @@ uploads/*
 !uploads/.gitkeep
 *.log
 
+# Local secrets (never commit)
+config.secrets.php
+
 # OS / editor
 Thumbs.db
 .DS_Store

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config.php';
 
 require_login();
 $user = current_user();
-$v    = verification_record((int) $user['id']);
+$verify = verification_record((int) $user['id']);
 $tick = verification_tick($user);
 
 $tickStyles = [
@@ -26,12 +26,12 @@ require_once __DIR__ . '/../includes/public-header.php';
     </div>
 
     <!-- status emblem -->
-    <div id="tick-panel" class="reveal mt-10 glass-strong rounded-[2rem] p-8 text-center neon-glow grad-border" data-tick="<?= e($tick['key']) ?>" data-override="<?= e($v['admin_override']) ?>">
+    <div id="tick-panel" class="reveal mt-10 glass-strong rounded-[2rem] p-8 text-center neon-glow grad-border" data-tick="<?= e($tick['key']) ?>" data-override="<?= e($verify['admin_override']) ?>">
       <div id="tick-icon" class="mx-auto w-24 h-24 rounded-full grid place-items-center text-4xl font-black border-2 <?= e($tickStyles[$tick['key']]['ring'] . ' ' . $tickStyles[$tick['key']]['glow']) ?>" style="background:linear-gradient(140deg,#0f172a,#0b1120)">
         <span class="<?= e($tickStyles[$tick['key']]['text']) ?>"><?= e($tick['icon']) ?></span>
       </div>
       <div id="tick-label" class="mt-4 text-lg font-bold text-white"><?= l($tick['label_en'], $tick['label_bn']) ?></div>
-      <?php if ($v['admin_override'] !== 'none'): ?>
+      <?php if ($verify['admin_override'] !== 'none'): ?>
         <p class="mt-1 text-xs text-accent-electric font-semibold"><?= l('Status set manually by the admin team.', 'অ্যাডমিন টিম দ্বারা ম্যানুয়ালি সেট করা হয়েছে।') ?></p>
       <?php endif; ?>
 

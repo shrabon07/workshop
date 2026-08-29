@@ -1,6 +1,6 @@
 <?php
 /* Shared public footer + script loader. */
-$v = version_time();
+$ver = version_time();
 ?>
 <footer class="relative mt-24 border-t border-white/10 bg-slate-950/80">
   <div class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent"></div>
@@ -54,11 +54,11 @@ $v = version_time();
 </footer>
 
 <script>window.AURORA_BASE = "<?= e(APP_BASE_URL) ?>";</script>
-<script defer src="<?= e(asset('js/i18n.js')) ?>?v=<?= $v ?>"></script>
-<script defer src="<?= e(asset('js/app.js')) ?>?v=<?= $v ?>"></script>
+<script defer src="<?= e(asset('js/i18n.js')) ?>?v=<?= $ver ?>"></script>
+<script defer src="<?= e(asset('js/app.js')) ?>?v=<?= $ver ?>"></script>
 <?php if (isset($LOAD_ORDER_JS)): ?>
-<script defer src="<?= e(asset('js/order.js')) ?>?v=<?= $v ?>"></script>
+<script defer src="<?= e(asset('js/order.js')) ?>?v=<?= $ver ?>"></script>
 <?php endif; ?>
-<script defer src="<?= e(asset('js/chat.js')) ?>?v=<?= $v ?>"></script>
+<script defer src="<?= e(asset('js/chat.js')) ?>?v=<?= $ver ?>"></script>
 </body>
 </html>
