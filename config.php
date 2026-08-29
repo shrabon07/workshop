@@ -11,21 +11,32 @@ declare(strict_types=1);
 
 /* ------------------------------------------------------------------ *
  *  LOCAL SECRETS (optional, git-ignored) — must load BEFORE the
- *  constants below: putenv() values are picked up by getenv().
+ *  constants below. Hosts like InfinityFree disable putenv(), so
+ *  config.secrets.php defines SECRET_* constants (no putenv needed).
  *  Copy config.secrets.php.example → config.secrets.php and fill in.
  * ------------------------------------------------------------------ */
 if (is_file(__DIR__ . '/config.secrets.php')) {
     require_once __DIR__ . '/config.secrets.php';
 }
 
+/** Resolve a config value: SECRET_* constant > getenv() > default. */
+function ac_env(string $secret, string $env, ?string $default): string
+{
+    if (defined($secret)) {
+        return (string) constant($secret);
+    }
+    $v = getenv($env);
+    return $v !== false && $v !== '' ? $v : (string) $default;
+}
+
 /* ------------------------------------------------------------------ *
  *  DATABASE (XAMPP defaults — root / empty password on 127.0.0.1:3306)
  * ------------------------------------------------------------------ */
-define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
-define('DB_PORT', (int) (getenv('DB_PORT') ?: 3306));
-define('DB_NAME', getenv('DB_NAME') ?: 'workshop');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_HOST', ac_env('SECRET_DB_HOST', 'DB_HOST', '127.0.0.1'));
+define('DB_PORT', (int) ac_env('SECRET_DB_PORT', 'DB_PORT', '3306'));
+define('DB_NAME', ac_env('SECRET_DB_NAME', 'DB_NAME', 'workshop'));
+define('DB_USER', ac_env('SECRET_DB_USER', 'DB_USER', 'root'));
+define('DB_PASS', ac_env('SECRET_DB_PASS', 'DB_PASS', ''));
 define('DB_CHARSET', 'utf8mb4');
 
 /* ------------------------------------------------------------------ *
@@ -92,13 +103,13 @@ define('WHATSAPP_LINK', 'https://wa.me/' . WHATSAPP_NUMBER);
  *  Leave MAIL_HOST empty to use the offline/dev fallback (mails are
  *  written to /storage/mailout so OTP flows still work when offline).
  * ------------------------------------------------------------------ */
-define('MAIL_FROM', getenv('MAIL_FROM') ?: SITE_EMAIL);
-define('MAIL_FROM_NAME', getenv('MAIL_FROM_NAME') ?: SITE_NAME);
-define('MAIL_HOST', getenv('MAIL_HOST') ?: '');        // e.g. smtp.gmail.com / smtp-relay.brevo.com
-define('MAIL_PORT', (int) (getenv('MAIL_PORT') ?: 587));
-define('MAIL_USER', getenv('MAIL_USER') ?: '');
-define('MAIL_PASS', getenv('MAIL_PASS') ?: '');
-define('MAIL_ENCRYPTION', getenv('MAIL_ENCRYPTION') ?: 'tls');
+define('MAIL_FROM', ac_env('SECRET_MAIL_FROM', 'MAIL_FROM', SITE_EMAIL));
+define('MAIL_FROM_NAME', ac_env('SECRET_MAIL_FROM_NAME', 'MAIL_FROM_NAME', SITE_NAME));
+define('MAIL_HOST', ac_env('SECRET_MAIL_HOST', 'MAIL_HOST', ''));      // e.g. smtp.gmail.com / smtp-relay.brevo.com
+define('MAIL_PORT', (int) ac_env('SECRET_MAIL_PORT', 'MAIL_PORT', '587'));
+define('MAIL_USER', ac_env('SECRET_MAIL_USER', 'MAIL_USER', ''));
+define('MAIL_PASS', ac_env('SECRET_MAIL_PASS', 'MAIL_PASS', ''));
+define('MAIL_ENCRYPTION', ac_env('SECRET_MAIL_ENCRYPTION', 'MAIL_ENCRYPTION', 'tls'));
 define('MAIL_DEBUG', false);
 
 /* Public logo URLs used inside branded emails. They mirror the exact asset the
@@ -116,7 +127,7 @@ define('DEV_REVEAL_OTP', !(MAIL_HOST !== '' && MAIL_USER !== ''));
 /* ------------------------------------------------------------------ *
  *  SECURITY & BEHAVIOUR
  * ------------------------------------------------------------------ */
-define('APP_ENV', getenv('APP_ENV') ?: 'dev');
+define('APP_ENV', ac_env('SECRET_APP_ENV', 'APP_ENV', 'dev'));
 define('OTP_TTL_MINUTES', 10);           // minutes an OTP stays valid
 define('OTP_RESEND_SECONDS', 60);        // cooldown before re-sending
 
