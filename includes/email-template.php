@@ -173,3 +173,65 @@ function email_brief_block(string $details): string
     }
     return '<div style="background:rgba(6,182,212,.08);border-left:3px solid #06b6d4;padding:12px 14px;border-radius:10px;color:#e2e8f0;font-size:13px;font-style:italic;margin:12px 0 0;">' . nl2br(e($details)) . '</div>';
 }
+
+/**
+ * Branded order-status email (sent to the client on EVERY admin update).
+ * Returns [subject, heading, tagline, body].
+ */
+function email_order_status_message(array $order, string $status): array
+{
+    $meta      = order_status_meta($status);
+    $label     = $meta['label_en'];
+    $project   = $order['project_type'] ?: 'your project';
+    $number    = '#' . (int) $order['id'];
+
+    switch ($status) {
+        case 'in_progress':
+            $subject  = 'Your project is in progress — ' . SITE_NAME;
+            $heading  = 'Update: project in progress';
+            $tagline  = 'We are building your project.';
+            $body     = '<p>Hi ' . e($order['name']) . ',</p>
+<p>Great news — <strong>' . e($project) . '</strong> (order ' . $number . ') has moved to <strong style="color:#f59e0b;">In Progress</strong> 🚀</p>
+' . email_order_facts($order) . '
+<p>Our team is on it. You will hear from us as we hit milestones — and you can jump in any time.</p>
+' . email_button('Message us on WhatsApp', WHATSAPP_LINK);
+            break;
+
+        case 'delivered':
+            $subject  = 'Your project is delivered — ' . SITE_NAME;
+            $heading  = 'Project delivered';
+            $tagline  = 'Your website is live.';
+            $body     = '<p>Hi ' . e($order['name']) . ',</p>
+<p>Great news — <strong>' . e($project) . '</strong> is <strong style="color:#059669;">delivered</strong> 🎉</p>
+' . email_order_facts($order) . '
+<p>Please test everything and tell us if you need any tweaks — we are one message away.</p>
+' . email_button('Message us on WhatsApp', WHATSAPP_LINK) . '
+<p style="margin-top:14px;font-size:13px;color:#64748b;">Thanks for trusting ' . e(SITE_NAME) . ' with your project. Take care, and let&#39;s grow from here!</p>';
+            break;
+
+        case 'cancelled':
+            $subject  = 'Your order has been cancelled — ' . SITE_NAME;
+            $heading  = 'Order cancelled';
+            $tagline  = 'We are here if you change your mind.';
+            $body     = '<p>Hi ' . e($order['name']) . ',</p>
+<p>Order ' . $number . ' (' . e($project) . ') has been <strong style="color:#f43f5e;">cancelled</strong>.</p>
+' . email_order_facts($order) . '
+<p>No hard feelings — if you would like to restart or adjust anything, just talk to us.</p>
+' . email_button('Talk to us on WhatsApp', WHATSAPP_LINK);
+            break;
+
+        default: // pending
+            $subject  = 'Order received — ' . SITE_NAME;
+            $heading  = 'Order received';
+            $tagline  = 'Your project is back in the queue.';
+            $body     = '<p>Hi ' . e($order['name']) . ',</p>
+<p>Order ' . $number . ' (' . e($project) . ') is back to <strong style="color:#38bdf8;">Pending</strong>.</p>
+' . email_order_facts($order) . '
+<p>We will get back to you soon with next steps.</p>
+' . email_button('Message us on WhatsApp', WHATSAPP_LINK);
+            break;
+    }
+
+    $badge = $label . ' · Order ' . $number;
+    return [$subject, $heading, $tagline, $body, $badge];
+}

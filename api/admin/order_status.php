@@ -17,21 +17,14 @@ if (!$order) {
 
 DB::update('orders', ['status' => $status, 'updated_at' => date('Y-m-d H:i:s')], 'id = ?', [$id]);
 
-if ($order['email'] && $status === 'delivered') {
-    $body = '<p>Hi ' . e($order['name']) . ',</p>
-<p>Great news — your project is <strong style="color:#059669;">delivered</strong> 🎉</p>
-' . email_order_facts($order) . '
-
-<p>Please test everything and tell us if you need any tweaks — we are one message away.</p>
-' . email_button('Message us on WhatsApp', WHATSAPP_LINK) . '
-
-<p style="margin-top:14px;font-size:13px;color:#64748b;">Thanks for trusting ' . e(SITE_NAME) . ' with your project. Take care, and let`s grow from here!</p>';
-
+/* Send a branded status email to the client on EVERY admin update. */
+if ($order['email']) {
+    [$subject, $heading, $tagline, $body, $badge] = email_order_status_message($order, $status);
     send_mail(
         $order['email'],
-        'Your project is delivered — ' . SITE_NAME,
-        email_layout('Project delivered', $body, ['badge' => 'Order #' . $order['id'], 'tagline' => 'Your website is live.']),
-        'Your project (order #' . $order['id'] . ') has been delivered. Reply to this email or message us on WhatsApp.'
+        $subject,
+        email_layout($heading, $body, ['badge' => $badge, 'tagline' => $tagline]),
+        'Your order #' . (int) $order['id'] . ' status: ' . e(order_status_meta($status)['label_en']) . '. Reply to this email or message us on WhatsApp.'
     );
 }
 
