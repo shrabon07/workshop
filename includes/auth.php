@@ -50,6 +50,9 @@ function is_logged_in(): bool
 /**
  * The currently signed-in admin's identity — used to stamp emails that an
  * admin triggers (sent-by line, From display name and Reply-To in send_mail).
+ * When a regular admin has a verified personal sender ('smtp'), send_mail
+ * authenticates with THEIR creds so the mail physically goes from their
+ * address. The super admin always falls back to the site account.
  */
 function admin_identity(): ?array
 {
@@ -57,7 +60,15 @@ function admin_identity(): ?array
         return null;
     }
     $u = DB::get('SELECT id, name, email FROM users WHERE id = ? AND role = "admin"', [current_user_id()]);
-    return $u ? ['id' => (int) $u['id'], 'name' => $u['name'], 'email' => $u['email']] : null;
+    if (!$u) {
+        return null;
+    }
+    $identity = ['id' => (int) $u['id'], 'name' => $u['name'], 'email' => $u['email']];
+    $profile  = admin_mail_profile((int) $u['id']);
+    if ($profile) {
+        $identity['smtp'] = $profile;
+    }
+    return $identity;
 }
 
 function require_login(): void

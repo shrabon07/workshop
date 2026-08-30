@@ -151,6 +151,7 @@
     a_payments: { en: 'Payments', bn: 'পেমেন্ট' },
     a_customers: { en: 'Customers', bn: 'গ্রাহক' },
     a_admins: { en: 'Admins', bn: 'অ্যাডমিন' },
+    a_mail: { en: 'My mail sender', bn: 'আমার মেইল সেন্ডার' },
     a_chats: { en: 'Live Chats', bn: 'লাইভ চ্যাট' },
     a_site: { en: 'View site', bn: 'সাইট দেখুন' },
     a_logout: { en: 'Sign out', bn: 'লগআউট' },

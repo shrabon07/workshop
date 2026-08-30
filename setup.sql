@@ -213,6 +213,23 @@ CREATE TABLE IF NOT EXISTS `payment_requests` (
   CONSTRAINT `fk_pr_user`  FOREIGN KEY (`user_id`)  REFERENCES `users`  (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- ADMIN MAIL SENDERS (per-admin Gmail app password, AES-encrypted)
+-- The super admin never uses this — emails always go from the site
+-- account (MAIL_FROM). A regular admin with a verified profile here
+-- sends customer emails from their OWN Gmail address.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `admin_mail_settings` (
+  `admin_id`    INT UNSIGNED NOT NULL,
+  `smtp_email`  VARCHAR(190) NOT NULL,
+  `smtp_pass`   VARCHAR(512) NOT NULL,   -- AES-256-CBC encrypted (ENCRYPTION_KEY)
+  `verified`    TINYINT(1)   NOT NULL DEFAULT 0,
+  `verified_at` DATETIME     NULL,
+  `updated_at`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`admin_id`),
+  CONSTRAINT `fk_ams_admin` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================

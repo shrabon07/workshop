@@ -22,6 +22,11 @@ $navItems = [
     'admins'     => ['url' => 'admins.php',     'icon' => '🛡', 'key' => 'a_admins'],
     'chats'      => ['url' => 'support.php',      'icon' => '✉', 'key' => 'a_chats'],
 ];
+// Regular admins connect their own Gmail sender here; the super admin is the
+// site account and never needs this page.
+if (!is_super_admin()) {
+    $navItems['mail'] = ['url' => 'mail-settings.php', 'icon' => '📤', 'key' => 'a_mail'];
+}
 
 $orderCount = (int) DB::value('SELECT COUNT(*) FROM orders WHERE status = "pending"');
 $chatCount  = (int) DB::value('SELECT COUNT(*) FROM chat_sessions WHERE status = "open"');

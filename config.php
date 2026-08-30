@@ -120,6 +120,11 @@ define('MAIL_HOST_SNI', ac_env('SECRET_MAIL_HOST_SNI', 'MAIL_HOST_SNI', ''));
  * that forbid outbound SMTP. Leave empty to use SMTP/mail()/disk only. */
 define('BREVO_API_KEY', ac_env('SECRET_BREVO_API_KEY', 'BREVO_API_KEY', ''));
 
+/* App-level AES key — encrypts each admin's SMTP app password at rest
+ * (see admin_mail_settings + admin/mail-settings.php). Keep it secret.
+ * Generate one with:  php -r "echo bin2hex(random_bytes(32));"  */
+define('ENCRYPTION_KEY', ac_env('SECRET_ENCRYPTION_KEY', 'ENCRYPTION_KEY', ''));
+
 /* Public logo URLs used inside branded emails. They mirror the exact asset the
  * homepage renders (assets/img/logo.*). An SVG is shown by Apple Mail via the
  * <picture> source; PNG covers Gmail/Outlook/Android. Override per deployment:
