@@ -39,5 +39,5 @@ json_ok([
     'smtp_email' => $email,
     'message' => $tested
         ? 'Sender verified — a test mail was sent to your Gmail. Your admin emails now come from your own address.'
-        : 'Saved but NOT verified. The SMTP test failed — turn ON 2-Step Verification for that Gmail and copy a fresh 16-letter app password from myaccount.google.com/apppasswords.',
+        : 'Saved but NOT verified. Gmail rejected the app password 3× — turn ON 2-Step Verification for that Gmail and copy a fresh 16-letter app password from myaccount.google.com/apppasswords, then Save again.',
 ]);

@@ -203,29 +203,38 @@ function phpmailer_try(array $cfg, string $to, string $subject, string $html, st
     }
 }
 
-/** Sends a tiny proof-mail using ONLY the given credentials (no fallback). */
+/** Sends a tiny proof-mail using ONLY the given credentials (no fallback).
+ *  Retries a couple of times to ride over transient Gmail/InfinityFree
+ *  throttles, so a one-off hiccup doesn't leave the admin "saved-unverified". */
 function smtp_test_auth(string $email, string $pass): bool
 {
     if (MAIL_HOST === '') {
         return false;
     }
-    return phpmailer_try(
-        [
-            'host'  => MAIL_HOST,
-            'port'  => MAIL_PORT,
-            'user'  => $email,
-            'pass'  => $pass,
-            'sec'   => MAIL_ENCRYPTION,
-            'sni'   => defined('MAIL_HOST_SNI') ? MAIL_HOST_SNI : '',
-            'from'  => $email,
-            'fname' => SITE_NAME . ' — sender test',
-        ],
-        $email,
-        'Test mail from ' . SITE_NAME . ' — your sender works',
-        '<div style="font-family:Sans-serif;color:#334155;background:#f8fafc;padding:18px;border-radius:12px;border:1px solid #e2e8f0;">' .
-        'If you are reading this, your Gmail app password works — emails you send from the ' . SITE_NAME . ' admin panel will now come from your own address.</div>',
-        'If you are reading this, your app password works.'
-    );
+    $cfg = [
+        'host'  => MAIL_HOST,
+        'port'  => MAIL_PORT,
+        'user'  => $email,
+        'pass'  => $pass,
+        'sec'   => MAIL_ENCRYPTION,
+        'sni'   => defined('MAIL_HOST_SNI') ? MAIL_HOST_SNI : '',
+        'from'  => $email,
+        'fname' => SITE_NAME . ' — sender test',
+    ];
+    $subject = 'Test mail from ' . SITE_NAME . ' — your sender works';
+    $html = '<div style="font-family:Sans-serif;color:#334155;background:#f8fafc;padding:18px;border-radius:12px;border:1px solid #e2e8f0;">' .
+            'If you are reading this, your Gmail app password works — emails you send from the ' . SITE_NAME . ' admin panel will now come from your own address.</div>';
+    $plain = 'If you are reading this, your app password works.';
+
+    for ($attempt = 1; $attempt <= 3; $attempt++) {
+        if (phpmailer_try($cfg, $email, $subject, $html, $plain)) {
+            return true;
+        }
+        if ($attempt < 3) {
+            sleep(2);
+        }
+    }
+    return false;
 }
 
 /**
