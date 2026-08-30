@@ -12,7 +12,7 @@ if (is_super_admin()) {
 }
 
 $email = strtolower(trim((string) post('smtp_email')));
-$pass  = (string) post('smtp_pass');
+$pass  = preg_replace('/\s+/', '', (string) post('smtp_pass')); /* Gmail shows app passwords with spaces */
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     json_error('Enter a valid Gmail address.');

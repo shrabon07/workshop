@@ -64,7 +64,8 @@ require_once __DIR__ . '/inc/head.php';
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-1.5"><?= l('Gmail app password (16 letters)', 'Gmail অ্যাপ পাসওয়ার্ড (১৬ অক্ষর)') ?></label>
-          <input id="ms-pass" type="password" class="input w-full !py-2.5" required minlength="16" maxlength="16" placeholder="abcd efgh ijkl mnop" autocomplete="new-password">
+          <input id="ms-pass" type="password" class="input w-full !py-2.5" required maxlength="30" placeholder="abcd efgh ijkl mnop" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="new-password">
+          <p id="ms-pass-hint" class="text-[11px] text-slate-500 mt-1"></p>
           <p class="mt-1.5 text-xs text-slate-500"><?= l('Saving sends a quick proof-mail to this address and marks it verified.', 'সংরক্ষণে এই ঠিকানায় একটি যাচাই-মেইল যায় এবং যাচাইকৃত হয়।') ?></p>
         </div>
         <div class="flex items-center gap-3 flex-wrap">

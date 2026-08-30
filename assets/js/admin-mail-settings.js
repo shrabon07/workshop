@@ -7,14 +7,34 @@
     var form = document.getElementById('mail-settings-form');
     if (!form) return;
 
+    var passInput = document.getElementById('ms-pass');
+    var passHint = document.getElementById('ms-pass-hint');
+
+    /* Gmail app passwords are 16 letters, but they are shown with spaces
+       (abcd efgh ijkl mnop). We strip any spaces so pasting either form works. */
+    function normPass() {
+      return (passInput.value || '').replace(/\s+/g, '');
+    }
+    if (passInput && passHint) {
+      passInput.addEventListener('input', function () {
+        var n = normPass().length;
+        passHint.textContent = n === 0 ? '' : (n === 16 ? '16 letters ✓' : (n + ' / 16 letters'));
+      });
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = document.getElementById('ms-save');
       var st = document.getElementById('ms-status');
       var email = document.getElementById('ms-email').value.trim();
-      var pass = document.getElementById('ms-pass').value.trim();
-      if (!email || !pass || pass.length !== 16) {
+      var pass = normPass();
+      if (!email || !pass) {
         st.textContent = 'Enter your Gmail and the 16-letter app password.';
+        st.className = 'text-xs text-amber-300';
+        return;
+      }
+      if (pass.length !== 16) {
+        st.textContent = 'Gmail app passwords are exactly 16 letters (spaces are optional).';
         st.className = 'text-xs text-amber-300';
         return;
       }
