@@ -103,21 +103,36 @@
 
     var addBtn = document.getElementById('btn-add-customer');
     if (addBtn) addBtn.addEventListener('click', function () {
+      function countrySelect() {
+        var c = window.CUSTOMER_COUNTRIES || [];
+        var def = window.CUSTOMER_COUNTRY_DEFAULT || 'Bangladesh';
+        var s = '<select name="country" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" required>'
+          + '<option value="" disabled selected>-- Select your country --</option>';
+        for (var i = 0; i < c.length; i++) {
+          s += '<option value="' + esc(c[i]) + '"' + (c[i] === def ? ' selected' : '') + '>' + esc(c[i]) + '</option>';
+        }
+        return s + '</select>';
+      }
       var m = A.modal(
-        '<h3 class="text-lg font-bold text-slate-100">Add new customer / নতুন কাস্টমার</h3>'
+        '<h3 class="text-lg font-bold text-slate-100">Add new customer / ��"���?��" ����_��,�?��Y��r��_���</h3>'
         + '<form id="cust-add-form" class="mt-4 space-y-4">'
-        + formRow('Name / নাম', '<input name="name" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" maxlength="120" required autofocus>')
-        + formRow('Email / ইমেইল', '<input name="email" type="email" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" maxlength="190" required>')
-        + formRow('Phone / ফোন', '<input name="phone" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" maxlength="30">')
-        + formRow('Password / পাসওয়ার্ড', '<input name="password" type="text" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" minlength="6" value="' + esc(randomPass()) + '" required>',
-            'At least 6 characters. Share these credentials with the customer. / কমপক্ষে 6 অক্ষর, কাস্টমারের সাথে শেয়ার করুন।')
-        + formRow('Manual verify / ম্যানুয়াল যাচাই',
+        + formRow('Name / ��"��_��r', '<input name="name" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" maxlength="120" required autofocus>')
+        + formRow('Email / ��؅�r�؅�؅��', '<input name="email" type="email" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" maxlength="190" required>')
+        + formRow('Phone / �ݮ�<��" (optional / ��?��s�?��>�ݨ��)', '<input name="phone" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" maxlength="30">')
+        + formRow('Country / ��s�?��"��_', countrySelect())
+        + formRow('Password / �ݦ��_��,��"��_�ݬ��_����?�ݭ', '<input name="password" type="text" class="input w-full !bg-slate-900/60 !border-white/10 text-slate-100" minlength="6" value="' + esc(randomPass()) + '" required>',
+            'At least 6 characters. Share these credentials with the customer. / ����r�ݦ���?����� 6 ��.���?������, ����_��,�?��Y��r��_����؅�� ��,��_�ݝ�� ���؅�_�ݬ��_��� ������?��"��')
+        + '<label class="flex items-start gap-2 text-sm text-slate-300 cursor-pointer select-none">'
+        + '<input type="checkbox" name="consent" value="1" required class="accent-cyan-400 h-4 w-4 mt-0.5">'
+        + '<span>I confirm this customer consents to the <a class="text-cyan-300 font-semibold hover:text-cyan-200" href="' + esc((window.AURORA_BASE || '') + '/terms-privacy.php') + '" target="_blank" rel="noopener">Terms &amp; Privacy</a> and <a class="text-cyan-300 font-semibold hover:text-cyan-200" href="' + esc((window.AURORA_BASE || '') + '/payment-methods.php') + '" target="_blank" rel="noopener">Payment Methods</a>.</span>'
+        + '</label>'
+        + formRow('Manual verify / ��r�?��_��_��"�?��_�ݬ��_��� ��_��_��s��_���',
             '<div class="flex gap-5">'
             + '<label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer select-none"><input type="checkbox" name="email_verified" value="1" class="accent-cyan-400 h-4 w-4"> Email verified</label>'
             + '<label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer select-none"><input type="checkbox" name="whatsapp_verified" value="1" class="accent-cyan-400 h-4 w-4"> WhatsApp verified</label>'
             + '</div>',
-            'Optional — checking marks that channel verified immediately. / ঐচ্ছিক — টিক দিলে চ্যানেলটি সাথে সাথে যাচাই হয়ে যাবে।')
-        + footerBtns('cust-add-form', 'Create / তৈরি করুন')
+            'Optional �?" checking marks that channel verified immediately. / ��?��s�?��>�ݨ�� �?" ��Y�ݨ�� ��݅ݨ����� ��s�?��_��_��"�؅����Y�ݨ ��,��_�ݝ�� ��,��_�ݝ�� ��_��_��s��_��� ��1��_�ݬ�� ��_��_�ݪ�؅�')
+        + footerBtns('cust-add-form', 'Create / ���^����ݨ ������?��"')
         + '</form>'
       );
       m.el.querySelector('[data-close]').addEventListener('click', m.close);

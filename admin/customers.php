@@ -1,6 +1,7 @@
 <?php
 /** Admin — Customers: verification ticks, manual override, edit, delete, single + bulk email. */
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../includes/countries.php';
 require_admin();
 $isSuper = is_super_admin();
 $mailReady = admin_mail_ready();
@@ -132,6 +133,10 @@ require_once __DIR__ . '/inc/head.php';
   </div>
 </div>
 <script defer src="<?= e(asset('js/admin-customers.js')) ?>?v=<?= $v ?>"></script>
+<script>
+  window.CUSTOMER_COUNTRIES = <?= json_encode(country_list()) ?>;
+  window.CUSTOMER_COUNTRY_DEFAULT = 'Bangladesh';
+</script>
 <?php
 require_once __DIR__ . '/inc/foot.php';
 ?>
