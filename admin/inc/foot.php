@@ -25,6 +25,7 @@ $v = version_time();
 <script>window.AURORA_BASE = "<?= e(APP_BASE_URL) ?>";</script>
 <script defer src="<?= e(asset('js/i18n.js')) ?>?v=<?= $v ?>"></script>
 <script defer src="<?= e(asset('js/admin.js')) ?>?v=<?= $v ?>"></script>
+<script defer src="<?= e(asset('js/admin-push.js')) ?>?v=<?= $v ?>"></script>
 <script defer src="<?= e(asset('js/scroll-nav.js')) ?>?v=<?= $v ?>"></script>
 <?php if (isset($LOAD_ADMIN_SERVICES)): ?>
 <script defer src="<?= e(asset('js/admin-services.js')) ?>?v=<?= $v ?>"></script>

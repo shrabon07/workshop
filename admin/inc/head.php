@@ -110,6 +110,12 @@ $payCount   = unpaid_payment_request_count();
           <h1 class="mt-1 text-2xl sm:text-3xl font-extrabold text-white"><?= e($adminTitle) ?></h1>
         </div>
         <div class="flex items-center gap-3">
+          <button type="button" id="push-bell" data-orders="<?= (int) $orderCount ?>" data-chats="<?= (int) $chatCount ?>"
+                  class="relative glass-chip rounded-xl flex items-center justify-center w-9 h-9 text-sm font-bold text-slate-200 select-none"
+                  aria-label="Browser notifications">
+            <span>🔔</span>
+            <span id="push-count" class="hidden mini-badge absolute -top-1 -right-1">0</span>
+          </button>
           <button type="button" data-lang-toggle class="lang-pill glass-chip rounded-xl flex items-center gap-1 text-xs font-bold text-slate-200 select-none">
             <span class="l-bn">বাং</span><span class="l-en">EN</span>
           </button>
