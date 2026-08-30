@@ -2,6 +2,7 @@
 /** Admin — Customer orders (list, filter, status control). */
 require_once __DIR__ . '/../config.php';
 require_admin();
+$isSuper = is_super_admin();
 
 $status = get('status');
 $q      = trim((string) get('q'));
@@ -82,6 +83,10 @@ require_once __DIR__ . '/inc/head.php';
           </td>
           <td>
             <div class="flex items-center gap-2 justify-end">
+              <?php if ($isSuper): ?>
+              <button type="button" class="order-del btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0 !border-rose-400/20 hover:!border-rose-400/50 hover:!text-rose-300" data-id="<?= (int) $o['id'] ?>"
+                      title="<?= e(l_attr('Delete order', 'অর্ডার মুছুন')) ?>">🗑</button>
+              <?php endif; ?>
               <select class="order-status input !py-1.5 !px-2 text-xs w-40" data-id="<?= (int) $o['id'] ?>" data-orig="<?= e($o['status']) ?>" <?= $o['status'] === 'cancelled' ? 'disabled' : '' ?>>
                 <?php foreach ($statuses as $st => $lb): ?>
                   <option value="<?= e($st) ?>" <?= $o['status'] === $st ? 'selected' : '' ?>><?= e($lb[0]) ?></option>

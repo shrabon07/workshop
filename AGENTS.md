@@ -59,7 +59,10 @@ Guidance for AI coding agents working in this repository.
    - APIs (all behind `admin-guard.php` → 401 to non-admins): `admin_create.php`, `admin_edit.php`, `admin_deactivate.php`, `admin_delete.php` — each requires `is_super_admin()` else **403**. Regular admins got 403 on all four in live tests; anon/customer got 401.
    - `admin/login.php` + `api/auth/login.php` reject deactivated admins with a "deactivated/contact the super admin" message.
    - `assets/js/admin-admins.js` — create/edit/deactivate/delete handlers (uses `window.Admin`; keep ALL helpers inside `boot()` so `A` is in scope — a helper outside threw `A is not defined`).
-   - Live DB also has a pre-existing regular admin: `flameshrabon@gmail.com` (Nahidul Islam, active).
+   - Live DB admins: #1 Aurora Admin (super, `maileditorportfolio@gmail.com`) + pre-existing regular admin `flameshrabon@gmail.com` (Nahidul Islam, active). Test admins cleaned after every round.
+   - **Permission model (super-only):** delete order, delete customer, mark payment paid/approve payment status. Regular admins CAN request payment (`payment_request_create` — sends customer email), create/edit customers, `customer_email` single/bulk, `verify_override` status ticks, order status change, everything else.
+     - `api/admin/order_delete.php` (super-only, `payment_requests` cascade; 404 when already gone), `customer_delete.php` (super-only 403), `payment_request_paid.php` (super-only 403 → "Only the super admin can approve payment status.", sends paid email).
+     - `admin/orders.php` 🗑 button, `admin/payments.php` "Mark as paid" button + 🔒 lock for regulars, `admin/customers.php` delete button — all rendered only when `is_super_admin()`; `assets/js/admin-orders.js` handles `order-del`. Verified live end-to-end (throwaway order/customer/admin created+deleted via real flows).
 
 ## Remaining/known items
 - Live DB has test data: order #7 (`maileditorportfolio@gmail.com` mail-test), order #8 (`Payment request` was not delivered during the 535 outage — optional manual resend), earlier order #5 (`e2e-smoke…@example.com`), guest chat sessions. Cleanup via phpMyAdmin if desired.

@@ -32,6 +32,22 @@
           .catch(function () { btn.dataset.loading = ''; btn.disabled = false; A.toast('Network error', 'error'); });
       });
     });
+  /* ---------- delete order (super admin only) ---------- */
+    document.querySelectorAll('.order-del').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        if (!confirm('Delete order #' + id + ' permanently? Its payment requests will also be removed. / অর্ডার #' + id + ' স্থায়ীভাবে মুছবেন? এর পেমেন্ট রিকোয়েস্টও মুছে যাবে।')) return;
+        btn.disabled = true;
+        btn.dataset.loading = '1';
+        A.post('api/admin/order_delete.php', { order_id: id })
+          .then(function (d) {
+            btn.dataset.loading = '';
+            if (d.ok) { A.toast('Order deleted', 'success'); location.reload(); }
+            else { btn.disabled = false; A.toast(d.error || 'Error', 'error'); }
+          })
+          .catch(function () { btn.dataset.loading = ''; btn.disabled = false; A.toast('Network error', 'error'); });
+      });
+    });
   }
 
   boot();

@@ -2,6 +2,7 @@
 /** Admin — Customers: verification ticks, manual override, edit, delete, single + bulk email. */
 require_once __DIR__ . '/../config.php';
 require_admin();
+$isSuper = is_super_admin();
 
 $q = trim((string) get('q'));
 $sql = 'SELECT u.*, v.email_verified, v.whatsapp_verified, v.admin_override
@@ -106,7 +107,7 @@ require_once __DIR__ . '/inc/head.php';
                       title="<?= e(l_attr('Edit', 'সম্পাদনা')) ?>">✎</button>
               <button type="button" class="cust-email btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0" data-id="<?= (int) $u['id'] ?>"
                       title="<?= e(l_attr('Send email', 'ইমেইল পাঠান')) ?>">✉</button>
-              <?php if (!$isAdmin): ?>
+              <?php if (!$isAdmin && $isSuper): ?>
               <button type="button" class="cust-del btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0 !border-rose-400/20 hover:!border-rose-400/50 hover:!text-rose-300" data-id="<?= (int) $u['id'] ?>"
                       title="<?= e(l_attr('Delete', 'মুছুন')) ?>">🗑</button>
               <?php endif; ?>

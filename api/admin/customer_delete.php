@@ -3,6 +3,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!is_super_admin()) {
+    json_error('Only the super admin can delete customers.', 403);
+}
+
 $userId = (int) post('user_id');
 
 $user = DB::get('SELECT id, role FROM users WHERE id = ?', [$userId]);

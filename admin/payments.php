@@ -2,6 +2,7 @@
 /** Admin — send custom payment requests to customers, track & mark them paid. */
 require_once __DIR__ . '/../config.php';
 require_admin();
+$isSuper = is_super_admin();
 
 $customers = DB::all('SELECT id, name, email FROM users WHERE role = "customer" ORDER BY name');
 
@@ -116,9 +117,13 @@ require_once __DIR__ . '/inc/head.php';
             </td>
             <td class="text-right">
               <?php if ($r['status'] !== 'paid'): ?>
+                <?php if ($isSuper): ?>
                 <button type="button" class="pay-paid-btn btn-teal !py-1.5 !px-3 !text-xs shrink-0" data-id="<?= (int) $r['id'] ?>">
                   <span class="e">Mark as paid</span><span class="b">পরিশোধিত করুন</span>
                 </button>
+                <?php else: ?>
+                <span class="text-slate-500 text-xs" title="<?= e(l_attr('Only the super admin can approve payment status.', 'কেবল সুপার অ্যাডমিন পেমেন্ট অনুমোদন করতে পারেন।')) ?>">🔒</span>
+                <?php endif; ?>
               <?php else: ?>
                 <span class="text-emerald-400/80 text-xs font-bold">✓</span>
               <?php endif; ?>

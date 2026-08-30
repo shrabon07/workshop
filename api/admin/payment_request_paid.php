@@ -7,6 +7,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!is_super_admin()) {
+    json_error('Only the super admin can approve payment status.', 403);
+}
+
 $reqId = (int) post('id');
 
 $req = DB::get(
