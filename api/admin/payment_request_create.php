@@ -44,11 +44,14 @@ $reqId = payment_request_create($userId, $orderId, $amount, $note);
 notify_payment_request($userId, $order, $amount, $reqId);
 
 [$subject, $heading, $tagline, $body, $badge] = email_payment_message($order, $amount, $note, false);
+$sb = admin_identity() ?: [];
 $ok = send_mail(
     $order['email'],
     $subject,
-    email_layout($heading, $body, ['tagline' => $tagline, 'badge' => $badge]),
-    'Payment request — order #' . $order['id'] . ': ' . price_fmt($amount)
+    email_layout($heading, $body, ['tagline' => $tagline, 'badge' => $badge, 'sent_by' => $sb]),
+    'Payment request — order #' . $order['id'] . ': ' . price_fmt($amount),
+    [],
+    $sb
 );
 
 json_ok([

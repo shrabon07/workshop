@@ -30,17 +30,20 @@ class_exists('PHPMailer\PHPMailer\Exception'); // pre-load exception class
  * disable outbound SMTP (InfinityFree blocks smtp.gmail.com etc.). Uses the
  * xkeysib-… API key. Returns true only when Brevo accepted the message.
  */
-function brevo_api_send(string $to, string $subject, string $html, string $plain = '', array $embedded = []): bool
+function brevo_api_send(string $to, string $subject, string $html, string $plain = '', array $embedded = [], string $fromDisplay = '', array $replyTo = []): bool
 {
     if (!defined('BREVO_API_KEY') || BREVO_API_KEY === '') {
         return false;
     }
     $payload = [
-        'sender'      => ['name' => MAIL_FROM_NAME, 'email' => MAIL_FROM],
+        'sender'      => ['name' => $fromDisplay !== '' ? $fromDisplay : MAIL_FROM_NAME, 'email' => MAIL_FROM],
         'to'          => [['email' => $to]],
         'subject'     => $subject,
         'htmlContent' => $html,
     ];
+    if (!empty($replyTo['email'])) {
+        $payload['replyTo'] = ['name' => $replyTo['name'] ?? '', 'email' => $replyTo['email']];
+    }
     if ($plain !== '') {
         $payload['textContent'] = $plain;
     }
@@ -90,14 +93,27 @@ function brevo_api_send(string $to, string $subject, string $html, string $plain
  *
  * $embedded = ['cidname' => '/absolute/path/to/image.png', ...] — attached as
  * inline (cid:) images so <img src="cid:cidname"> renders in Gmail/Outlook.
+ *
+ * $sentBy = ['name' => ..., 'email' => ...] — the admin who initiated the mail.
+ * The envelope sender stays MAIL_FROM (the auth'd Gmail), but the From display
+ * name shows the admin and a Reply-To routes replies straight to that admin.
  */
-function send_mail(string $to, string $subject, string $html, string $plain = '', array $embedded = []): bool
+function send_mail(string $to, string $subject, string $html, string $plain = '', array $embedded = [], array $sentBy = []): bool
 {
     if ($plain === '') {
         $plain = strip_tags((string) preg_replace('/<br\s*\/?>/i', "\n", $html));
     }
 
-    if (brevo_api_send($to, $subject, $html, $plain, $embedded)) {
+    $fromDisplay = MAIL_FROM_NAME;
+    $replyTo     = [];
+    if (!empty($sentBy['email']) && filter_var($sentBy['email'], FILTER_VALIDATE_EMAIL)) {
+        $byName       = trim((string) ($sentBy['name'] ?? ''));
+        $byName       = $byName !== '' ? $byName : $sentBy['email'];
+        $fromDisplay  = MAIL_FROM_NAME . ' · ' . $byName;
+        $replyTo      = ['email' => trim($sentBy['email']), 'name' => $byName];
+    }
+
+    if (brevo_api_send($to, $subject, $html, $plain, $embedded, $fromDisplay, $replyTo)) {
         return true;
     }
 
@@ -146,7 +162,10 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
                     }
 
                     $mail->CharSet = 'UTF-8';
-                    $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
+                    $mail->setFrom(MAIL_FROM, $fromDisplay);
+                    if (!empty($replyTo['email'])) {
+                        $mail->addReplyTo($replyTo['email'], $replyTo['name']);
+                    }
                     $mail->addAddress($to);
                     $mail->Subject = $subject;
                     $mail->isHTML(true);
@@ -171,7 +190,10 @@ function send_mail(string $to, string $subject, string $html, string $plain = ''
 
         if (function_exists('mail')) {
             $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=UTF-8\r\n";
-            $headers .= 'From: ' . MAIL_FROM_NAME . ' <' . MAIL_FROM . ">\r\n";
+            $headers .= 'From: ' . $fromDisplay . ' <' . MAIL_FROM . ">\r\n";
+            if (!empty($replyTo['email'])) {
+                $headers .= 'Reply-To: ' . $replyTo['name'] . ' <' . $replyTo['email'] . ">\r\n";
+            }
             if (@mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $html, $headers)) {
                 return true;
             }

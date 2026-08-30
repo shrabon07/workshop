@@ -22,8 +22,11 @@ $bodyHtml = '<p>' . nl2br(e($message)) . '</p>'
           . '<p style="margin-top:16px;font-size:12px;color:#64748b;">— ' . e(SITE_NAME) . ' · '
           . e(SITE_EMAIL) . '<br>' . ($bulk ? 'You receive these updates because you contacted us. Reply "STOP" to unsubscribe.' : '') . '</p>';
 
+$sb = admin_identity() ?: [];
+
 $html = email_layout($bulk ? 'Updates from ' . SITE_NAME : 'Message from ' . SITE_NAME, $bodyHtml, [
     'tagline' => $bulk ? 'News, offers and project updates.' : 'Sent from the customer team.',
+    'sent_by' => $sb,
 ]);
 
 if ($bulk) {
@@ -34,7 +37,7 @@ if ($bulk) {
     $sent = 0;
     $failed = 0;
     foreach ($rows as $c) {
-        $ok = send_mail($c['email'], $subject, $html, $message . ' — ' . SITE_NAME);
+        $ok = send_mail($c['email'], $subject, $html, $message . ' — ' . SITE_NAME, [], $sb);
         $ok ? $sent++ : $failed++;
     }
     json_ok(['mode' => 'bulk', 'sent' => $sent, 'failed' => $failed]);
@@ -48,8 +51,10 @@ if (!$cust) {
 $ok = send_mail(
     $cust['email'],
     $subject,
-    email_layout('Message from ' . SITE_NAME, $bodyHtml, ['tagline' => 'A note from the ' . SITE_NAME . ' team.']),
-    $message . ' — ' . SITE_NAME
+    email_layout('Message from ' . SITE_NAME, $bodyHtml, ['tagline' => 'A note from the ' . SITE_NAME . ' team.', 'sent_by' => $sb]),
+    $message . ' — ' . SITE_NAME,
+    [],
+    $sb
 );
 if (!$ok) {
     json_error('Email could not be sent.');

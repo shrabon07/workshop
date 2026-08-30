@@ -38,11 +38,14 @@ payment_request_mark_paid($reqId);
 notify_payment_paid((int) $req['user_id'], $order, $amount, $reqId);
 
 [$subject, $heading, $tagline, $body, $badge] = email_payment_message($order, $amount, '', true);
+$sb = admin_identity() ?: [];
 $ok = send_mail(
     $order['email'],
     $subject,
-    email_layout($heading, $body, ['tagline' => $tagline, 'badge' => $badge]),
-    'Payment received — order #' . $order['id'] . ': ' . price_fmt($amount)
+    email_layout($heading, $body, ['tagline' => $tagline, 'badge' => $badge, 'sent_by' => $sb]),
+    'Payment received — order #' . $order['id'] . ': ' . price_fmt($amount),
+    [],
+    $sb
 );
 
 json_ok([

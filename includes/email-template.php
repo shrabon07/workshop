@@ -12,6 +12,17 @@ function email_layout(string $heading, string $bodyHtml, array $opts = []): stri
     $badge    = $opts['badge']    ?? 'Update';
     $footer   = $opts['footer']   ?? email_layout_footer();
 
+    // Acting admin who initiated this mail (see send_mail $sentBy).
+    $by = $opts['sent_by'] ?? null;
+    if (is_array($by) && !empty($by['email']) && filter_var($by['email'], FILTER_VALIDATE_EMAIL)) {
+        $byName = trim((string) ($by['name'] ?? ''));
+        $byName = $byName !== '' ? $byName : $by['email'];
+        $byLine = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);font-size:11px;line-height:1.7;color:#7dd3fc;">'
+                . 'Sent by <strong>' . e($byName) . '</strong> &lt;' . e($by['email']) . '&gt; · '
+                . '<a href="mailto:' . e($by['email']) . '" style="color:#22d3ee;text-decoration:none;">reply</a> goes straight to them.</div>';
+        $footer = $footer . $byLine;
+    }
+
     return
 '<!DOCTYPE html>
 <html lang="en">

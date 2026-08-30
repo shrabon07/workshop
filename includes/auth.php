@@ -47,6 +47,19 @@ function is_logged_in(): bool
     return current_user() !== null;
 }
 
+/**
+ * The currently signed-in admin's identity — used to stamp emails that an
+ * admin triggers (sent-by line, From display name and Reply-To in send_mail).
+ */
+function admin_identity(): ?array
+{
+    if (!is_admin()) {
+        return null;
+    }
+    $u = DB::get('SELECT id, name, email FROM users WHERE id = ? AND role = "admin"', [current_user_id()]);
+    return $u ? ['id' => (int) $u['id'], 'name' => $u['name'], 'email' => $u['email']] : null;
+}
+
 function require_login(): void
 {
     if (!is_logged_in()) {

@@ -54,11 +54,14 @@ $bodyHtml = '<p>Hi ' . e($name) . ',</p>'
           . '</table>'
           . '<p style="margin-top:8px;font-size:12px;color:#94a3b8;">Keep this password safe, and change it after signing in. '
           . 'Verifying your email gets you priority support on WhatsApp.</p>';
+$sb = admin_identity() ?: [];
 $sent = send_mail(
     $email,
     $subject,
-    email_layout($subject, $bodyHtml, ['tagline' => 'Your account is ready.']),
-    "Hi " . $name . ",\n\nYour " . SITE_NAME . " account is ready.\n\nEmail: " . $email . "\nPassword: " . $pass . "\n\nSign in: " . $loginUrl
+    email_layout($subject, $bodyHtml, ['tagline' => 'Your account is ready.', 'sent_by' => $sb]),
+    "Hi " . $name . ",\n\nYour " . SITE_NAME . " account is ready.\n\nEmail: " . $email . "\nPassword: " . $pass . "\n\nSign in: " . $loginUrl,
+    [],
+    $sb
 );
 
 json_ok([

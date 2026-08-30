@@ -55,11 +55,14 @@ $bodyHtml = '<p>Hi ' . e($name) . ',</p>'
           . '<td style="padding:10px 12px;background:#0f172a;border:1px solid #1e293b;border-radius:0 0 10px 10px;"><a href="' . e($loginUrl) . '" style="color:#22d3ee;font-weight:700;">' . e($loginUrl) . '</a></td></tr>'
           . '</table>'
           . '<p style="margin-top:8px;font-size:12px;color:#94a3b8;">Only admins can access the panel. Keep your password safe and change it after signing in.</p>';
+$sb = admin_identity() ?: [];
 $sent = send_mail(
     $email,
     $subject,
-    email_layout($subject, $bodyHtml, ['tagline' => 'Admin access granted.']),
-    "Hi " . $name . ",\n\nYour " . SITE_NAME . " admin account is ready.\n\nEmail: " . $email . "\nPassword: " . $pass . "\n\nSign in: " . $loginUrl
+    email_layout($subject, $bodyHtml, ['tagline' => 'Admin access granted.', 'sent_by' => $sb]),
+    "Hi " . $name . ",\n\nYour " . SITE_NAME . " admin account is ready.\n\nEmail: " . $email . "\nPassword: " . $pass . "\n\nSign in: " . $loginUrl,
+    [],
+    $sb
 );
 
 json_ok([
