@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email`      VARCHAR(190)  NOT NULL,
   `password`   VARCHAR(255)  NOT NULL,
   `phone`      VARCHAR(30)   NULL DEFAULT NULL,
+  `country`    VARCHAR(90)   NULL DEFAULT NULL,
   `role`       ENUM('admin','customer') NOT NULL DEFAULT 'customer',
   `is_active`  TINYINT(1)  NOT NULL DEFAULT 1,
   `is_super_admin` TINYINT(1) NOT NULL DEFAULT 0,
