@@ -6,6 +6,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!is_super_admin()) {
+    json_error('Only the super admin can create admins.', 403);
+}
+
 $name  = trim((string) post('name'));
 $email = strtolower(trim((string) post('email')));
 $pass  = (string) post('password');
@@ -18,11 +22,13 @@ if (DB::get('SELECT id FROM users WHERE email = ?', [$email])) {
 }
 
 $id = DB::insert('users', [
-    'name'       => $name,
-    'email'      => $email,
-    'password'   => password_hash($pass, PASSWORD_DEFAULT),
-    'role'       => 'admin',
-    'created_at' => date('Y-m-d H:i:s'),
+    'name'           => $name,
+    'email'          => $email,
+    'password'       => password_hash($pass, PASSWORD_DEFAULT),
+    'role'           => 'admin',
+    'is_active'      => 1,
+    'is_super_admin' => 0,
+    'created_at'     => date('Y-m-d H:i:s'),
 ]);
 
 $now = date('Y-m-d H:i:s');

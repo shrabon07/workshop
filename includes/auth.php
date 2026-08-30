@@ -30,7 +30,16 @@ function current_user(): ?array
 function is_admin(): bool
 {
     $u = current_user();
-    return $u !== null && $u['role'] === 'admin';
+    return $u !== null && $u['role'] === 'admin' && (int) ($u['is_active'] ?? 1) === 1;
+}
+
+function is_super_admin(): bool
+{
+    $u = current_user();
+    return $u !== null
+        && $u['role'] === 'admin'
+        && (int) ($u['is_super_admin'] ?? 0) === 1
+        && (int) ($u['is_active'] ?? 1) === 1;
 }
 
 function is_logged_in(): bool

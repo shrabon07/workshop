@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password`   VARCHAR(255)  NOT NULL,
   `phone`      VARCHAR(30)   NULL DEFAULT NULL,
   `role`       ENUM('admin','customer') NOT NULL DEFAULT 'customer',
+  `is_active`  TINYINT(1)  NOT NULL DEFAULT 1,
+  `is_super_admin` TINYINT(1) NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -222,11 +224,11 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- customer@demo.com    / customer123   (red — nothing verified)
 -- verified@demo.com    / verified123   (grey — email only)
 -- full@demo.com        / full123       (green — email + whatsapp)
-INSERT INTO `users` (`id`,`name`,`email`,`password`,`phone`,`role`) VALUES
-(1,'Aurora Admin','maileditorportfolio@gmail.com','$2y$10$HyP0e/2TVZDTd56rVzZwYekOxhbvx9S35Vyxq42SJx2pPiXozQyMG','+8801712345678','admin'),
-(2,'Rahim Karim','customer@demo.com','$2y$10$pXKuiK.W0xmpeiLAh6sQoOkPDZpmJhzGrPcZJFBcCkfFHTlim/e9K','01711223344','customer'),
-(3,'Tasnim Binte Ali','verified@demo.com','$2y$10$e3a.Wk3yL.GNE6yeBh/BvOe2NXJmHfFMn6QnrMobqImwVtm3KqQ3W','01822334455','customer'),
-(4,'Nafis Hasan','full@demo.com','$2y$10$OzGifd3F/jpKOPiEkG1/WevoeS0cwl4JiurJjDZSLTdKtBWZYnfuG','01933445566','customer');
+INSERT INTO `users` (`id`,`name`,`email`,`password`,`phone`,`role`,`is_active`,`is_super_admin`) VALUES
+(1,'Aurora Admin','maileditorportfolio@gmail.com','$2y$10$HyP0e/2TVZDTd56rVzZwYekOxhbvx9S35Vyxq42SJx2pPiXozQyMG','+8801712345678','admin',1,1),
+(2,'Rahim Karim','customer@demo.com','$2y$10$pXKuiK.W0xmpeiLAh6sQoOkPDZpmJhzGrPcZJFBcCkfFHTlim/e9K','01711223344','customer',1,0),
+(3,'Tasnim Binte Ali','verified@demo.com','$2y$10$e3a.Wk3yL.GNE6yeBh/BvOe2NXJmHfFMn6QnrMobqImwVtm3KqQ3W','01822334455','customer',1,0),
+(4,'Nafis Hasan','full@demo.com','$2y$10$OzGifd3F/jpKOPiEkG1/WevoeS0cwl4JiurJjDZSLTdKtBWZYnfuG','01933445566','customer',1,0);
 
 INSERT INTO `verification_status` (`user_id`,`email_verified`,`whatsapp_verified`,`email_verified_at`,`whatsapp_verified_at`,`admin_override`) VALUES
 (1,0,0,NULL,NULL,'none'),

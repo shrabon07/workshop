@@ -20,6 +20,10 @@ if (!$user || !password_verify($password, $user['password'])) {
     json_error('Incorrect email or password.', 401);
 }
 
+if ($user['role'] === 'admin' && (int) ($user['is_active'] ?? 1) !== 1) {
+    json_error('This admin account has been deactivated. Contact the super admin.', 403);
+}
+
 login_user($user);
 
 $fallback = $user['role'] === 'admin' ? url('admin/dashboard.php') : url('account/dashboard.php');

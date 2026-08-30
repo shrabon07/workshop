@@ -15,6 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
     if ($user && password_verify($password, $user['password'])) {
         if ($user['role'] !== 'admin') {
             $error = l('This account is not an admin.', 'এই অ্যাকাউন্টটি এডমিন নয়।');
+        } elseif ((int) ($user['is_active'] ?? 1) !== 1) {
+            $error = l('This admin account has been deactivated. Contact the super admin.', 'এই অ্যাডমিন অ্যাকাউন্ট নিষ্ক্রিয় করা হয়েছে। সুপার অ্যাডমিনের সাথে যোগাযোগ করুন।');
         } else {
             login_user($user);
             header('Location: ' . url('admin/dashboard.php'));
