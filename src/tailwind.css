@@ -51,4 +51,8 @@
   .card-hover {
     @apply relative overflow-hidden transition-all duration-500 hover:-translate-y-1.5;
   }
+  /* ---- mail-pad toolbar button (compose) ---- */
+  .pad-tool {
+    @apply inline-flex items-center justify-center min-w-[30px] h-8 px-2 rounded-lg text-sm font-bold text-slate-300 glass hover:text-white hover:border-cyan-400/40 transition-colors cursor-pointer select-none;
+  }
 }

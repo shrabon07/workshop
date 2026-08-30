@@ -7,6 +7,19 @@ $me = current_user();
 $isSuper = is_super_admin();
 $admins = DB::all('SELECT id, name, email, is_active, is_super_admin, created_at FROM users WHERE role = "admin" ORDER BY id ASC');
 
+/* Verified app-password senders (super admin reads the list). */
+$verifiedSenders = [];
+if ($isSuper) {
+    $verifiedSenders = DB::all(
+        'SELECT ams.admin_id, ams.smtp_email, ams.verified, ams.verified_at, u.name AS admin_name
+           FROM admin_mail_settings ams
+           JOIN users u ON u.id = ams.admin_id
+          WHERE ams.verified = 1
+            AND NULLIF(u.email, "") IS NOT NULL
+          ORDER BY u.id ASC'
+    );
+}
+
 $PAGE_TITLE = 'Admins';
 $ACTIVE = 'admins';
 require_once __DIR__ . '/inc/head.php';
@@ -94,6 +107,45 @@ require_once __DIR__ . '/inc/head.php';
   <div class="mt-5 rounded-2xl border border-cyan-400/15 bg-cyan-400/5 px-5 py-4 text-xs text-slate-400 leading-relaxed">
     <b class="text-cyan-300"><?= l('Security note', 'নিরাপত্তা নোট') ?>:</b>
     <?= l('Deactivating an admin locks them out of the panel immediately. You cannot deactivate or delete your own super admin account.', 'অ্যাডমিন নিষ্ক্রিয় করলে সাথে সাথে প্যানেল অ্যাক্সেস বন্ধ হয়ে যায়। আপনি নিজের সুপার অ্যাডমিন অ্যাকাউন্ট নিষ্ক্রিয় বা মুছতে পারবেন না।') ?>
+  </div>
+
+  <div class="mt-5 rounded-2xl border border-white/10">
+    <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-white/10">
+      <h3 class="font-bold text-white text-sm flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg grid place-items-center text-xs bg-gradient-to-br from-brand-deep to-brand-light">📤</span>
+        <span class="e">Verified mail senders</span><span class="b">যাচাইকৃত মেইল সেন্ডার</span>
+      </h3>
+      <?php if ($verifiedSenders): ?><span class="mini-badge"><?= count($verifiedSenders) ?></span><?php endif; ?>
+    </div>
+    <div class="overflow-x-auto nice-scroll">
+      <table class="admin-table min-w-[540px]">
+        <thead>
+          <tr>
+            <th><span class="e">Admin</span><span class="b">অ্যাডমিন</span></th>
+            <th><span class="e">Sender address</span><span class="b">সেন্ডার ঠিকানা</span></th>
+            <th><span class="e">Verified since</span><span class="b">যাচাইকৃত</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($verifiedSenders as $vs):
+            $masked = preg_replace('/^(.).*(@.*)$/', '$1***$2', $vs['smtp_email']);
+          ?>
+          <tr>
+            <td class="font-bold text-slate-100 text-sm"><?= e($vs['admin_name']) ?></td>
+            <td>
+              <span class="inline-flex items-center gap-2 text-xs text-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span><?= e($masked) ?>
+              </span>
+            </td>
+            <td class="text-xs text-slate-400"><?= $vs['verified_at'] ? e(date('M j, Y', strtotime($vs['verified_at']))) : '—' ?></td>
+          </tr>
+          <?php endforeach; ?>
+          <?php if (!$verifiedSenders): ?>
+          <tr><td colspan="3" class="text-center py-10 text-slate-500 text-sm"><?= l('No regular admin has a verified mail sender yet.', 'এখনো কোনো সাধারণ অ্যাডমিনের যাচাইকৃত মেইল সেন্ডার নেই।') ?></td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
   </div>
   <?php endif; ?>
 </div>

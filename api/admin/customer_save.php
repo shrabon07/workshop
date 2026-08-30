@@ -3,6 +3,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!admin_mail_ready()) {
+    json_error('Connect and verify your mail sender (Mail settings → My mail sender) before editing customers.', 403);
+}
+
 $id        = (int) post('user_id');
 $name      = trim((string) post('name'));
 $email     = trim((string) post('email'));

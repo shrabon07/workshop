@@ -230,6 +230,24 @@ CREATE TABLE IF NOT EXISTS `admin_mail_settings` (
   CONSTRAINT `fk_ams_admin` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- CUSTOM MAIL LOG  (mail-pad composer archive — every custom mail sent)
+-- Super admin reads the full list + can delete; regular admins see only
+-- their own sent mails (no delete). Deleting a row removes it from DB.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `custom_mail_log` (
+  `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `admin_id`    INT UNSIGNED    NOT NULL,        -- the admin who sent it
+  `recipients`  VARCHAR(1500)   NOT NULL,        -- comma-separated To list (≤10)
+  `subject`     VARCHAR(190)    NOT NULL,
+  `message`     TEXT            NOT NULL,
+  `sent_count`  SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  `created_at`  DATETIME        NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_admin` (`admin_id`, `id`),
+  CONSTRAINT `fk_cml_admin` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================

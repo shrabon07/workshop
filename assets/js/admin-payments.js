@@ -15,10 +15,20 @@
     if (!custSel || !orderSel || !amountIn) return;
 
     var sendBtn = document.getElementById('pay-send');
+    var form = document.getElementById('pay-request-form');
+    var locked = form && !!form.getAttribute('data-locked');
 
     function refreshSend() {
-      sendBtn.disabled = !(custSel.value && orderSel.value && parseFloat(amountIn.value) > 0);
+      sendBtn.disabled = locked || !(custSel.value && orderSel.value && parseFloat(amountIn.value) > 0);
     }
+
+    function enableChoice(flag) {
+      custSel.disabled = locked || !flag;
+      orderSel.disabled = locked || !flag;
+      amountIn.disabled = locked || !flag;
+    }
+
+    document.getElementById('pay-note').disabled = locked;
 
     amountIn.addEventListener('input', refreshSend);
     orderSel.addEventListener('change', function () {
@@ -37,7 +47,7 @@
       var cust = data[custSel.value];
       orderSel.innerHTML = '<option value="">— Select order —</option>';
       amountIn.value = '';
-      orderSel.disabled = !cust || !cust.orders.length;
+      enableChoice(!!cust && !!cust.orders.length);
       hint.textContent = '';
       if (cust) {
         cust.orders.forEach(function (o) {

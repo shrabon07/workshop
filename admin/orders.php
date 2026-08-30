@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config.php';
 require_admin();
 $isSuper = is_super_admin();
+$mailReady = admin_mail_ready();
 
 $status = get('status');
 $q      = trim((string) get('q'));
@@ -37,6 +38,14 @@ $ACTIVE = 'orders';
 require_once __DIR__ . '/inc/head.php';
 ?>
 <div class="glass-strong rounded-3xl p-6">
+  <?php if (!$mailReady): ?>
+  <div class="mb-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-200">
+    <span class="e">Changing order status is locked until you connect a <strong>verified mail sender</strong> —
+      <a class="underline text-cyan-300 font-bold" href="<?= e(url('admin/mail-settings.php')) ?>">My mail sender</a>.</span>
+    <span class="b">অর্ডারের অবস্থা পরিবর্তন একটি <strong>যাচাইকৃত মেইল সেন্ডার</strong> যুক্ত না করা পর্যন্ত বন্ধ —
+      <a class="underline text-cyan-300 font-bold" href="<?= e(url('admin/mail-settings.php')) ?>">আমার মেইল সেন্ডার</a>。</span>
+  </div>
+  <?php endif; ?>
   <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
     <div class="flex flex-wrap items-center gap-2">
       <div class="flex flex-wrap items-center gap-2" id="order-tabs">
@@ -87,12 +96,12 @@ require_once __DIR__ . '/inc/head.php';
               <button type="button" class="order-del btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0 !border-rose-400/20 hover:!border-rose-400/50 hover:!text-rose-300" data-id="<?= (int) $o['id'] ?>"
                       title="<?= e(l_attr('Delete order', 'অর্ডার মুছুন')) ?>">🗑</button>
               <?php endif; ?>
-              <select class="order-status input !py-1.5 !px-2 text-xs w-40" data-id="<?= (int) $o['id'] ?>" data-orig="<?= e($o['status']) ?>" <?= $o['status'] === 'cancelled' ? 'disabled' : '' ?>>
+              <select class="order-status input !py-1.5 !px-2 text-xs w-40" data-id="<?= (int) $o['id'] ?>" data-orig="<?= e($o['status']) ?>" <?= ($o['status'] === 'cancelled' || !$mailReady) ? 'disabled' : '' ?>>
                 <?php foreach ($statuses as $st => $lb): ?>
                   <option value="<?= e($st) ?>" <?= $o['status'] === $st ? 'selected' : '' ?>><?= e($lb[0]) ?></option>
                 <?php endforeach; ?>
               </select>
-              <button type="button" class="order-update btn-teal !py-1.5 !px-3 !text-xs shrink-0" data-id="<?= (int) $o['id'] ?>" disabled <?= $o['status'] === 'cancelled' ? 'data-lock="1" disabled' : '' ?>>
+              <button type="button" class="order-update btn-teal !py-1.5 !px-3 !text-xs shrink-0" data-id="<?= (int) $o['id'] ?>" disabled <?= ($o['status'] === 'cancelled' || !$mailReady) ? 'data-lock="1" disabled' : '' ?>>
                 <?= l('Update', 'আপডেট') ?>
               </button>
             </div>

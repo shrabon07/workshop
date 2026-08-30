@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config.php';
 require_admin();
 $isSuper = is_super_admin();
+$mailReady = admin_mail_ready();
 
 $customers = DB::all('SELECT id, name, email FROM users WHERE role = "customer" ORDER BY name');
 
@@ -37,11 +38,20 @@ require_once __DIR__ . '/inc/head.php';
     </h2>
     <p class="mt-1 text-sm text-slate-400"><?= l('Pick a customer — their active orders appear automatically. Override the amount, add a note if needed, then send.', 'গ্রাহক বাছুন — সক্রিয় অর্ডারগুলো অটো দেখা যাবে। প্রয়োজন হলে পরিমাণ বদলান, নোট লিখুন, পাঠান।') ?></p>
 
-    <form id="pay-request-form" class="mt-5 grid gap-4">
+    <?php if (!$mailReady): ?>
+      <div class="mt-4 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-200">
+        <span class="e">Sending payment requests is locked until you connect a <strong>verified mail sender</strong> —
+          <a class="underline text-cyan-300 font-bold" href="<?= e(url('admin/mail-settings.php')) ?>">My mail sender</a>. (Seen by the customer via email + notification.)</span>
+        <span class="b">পেমেন্ট রিকোয়েস্ট পাঠানো একটি <strong>যাচাইকৃত মেইল সেন্ডার</strong> যুক্ত না করা পর্যন্ত বন্ধ —
+          <a class="underline text-cyan-300 font-bold" href="<?= e(url('admin/mail-settings.php')) ?>">আমার মেইল সেন্ডার</a>।</span>
+      </div>
+    <?php endif; ?>
+
+    <form id="pay-request-form" class="mt-5 grid gap-4" <?= $mailReady ? '' : 'data-locked="1"' ?>>
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-1.5"><?= l('Customer', 'গ্রাহক') ?></label>
-          <select id="pay-customer" class="input w-full !py-2.5">
+          <select id="pay-customer" class="input w-full !py-2.5" <?= $mailReady ? '' : 'disabled' ?>>
             <option value="">— <?= l('Select customer', 'গ্রাহক বাছুন') ?> —</option>
             <?php foreach ($payData as $cid => $cd): ?>
               <option value="<?= (int) $cid ?>"><?= e($cd['name']) ?></option>
@@ -58,11 +68,11 @@ require_once __DIR__ . '/inc/head.php';
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-1.5"><?= l('Amount (override)', 'পরিমাণ (ওভাররাইড)') ?></label>
-          <input id="pay-amount" type="number" step="0.01" min="1" class="input w-full !py-2.5" placeholder="0.00" required>
+          <input id="pay-amount" type="number" step="0.01" min="1" class="input w-full !py-2.5" placeholder="0.00" required <?= $mailReady ? '' : 'disabled' ?>>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-1.5"><?= l('Note for customer (optional)', 'গ্রাহকের জন্য নোট (ঐচ্ছিক)') ?></label>
-          <input id="pay-note" type="text" maxlength="1000" class="input w-full !py-2.5" placeholder="<?= e(l_attr('e.g. 50% advance before we start…', 'যেমন: শুরু করার আগে ৫০% অগ্রিম…')) ?>">
+          <input id="pay-note" type="text" maxlength="1000" class="input w-full !py-2.5" placeholder="<?= e(l_attr('e.g. 50% advance before we start…', 'যেমন: শুরু করার আগে ৫০% অগ্রিম…')) ?>" <?= $mailReady ? '' : 'disabled' ?>>
         </div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">

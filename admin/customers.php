@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config.php';
 require_admin();
 $isSuper = is_super_admin();
+$mailReady = admin_mail_ready();
 
 $q = trim((string) get('q'));
 $sql = 'SELECT u.*, v.email_verified, v.whatsapp_verified, v.admin_override
@@ -36,13 +37,21 @@ $ACTIVE = 'customers';
 require_once __DIR__ . '/inc/head.php';
 ?>
 <div class="glass-strong rounded-3xl p-6">
+  <?php if (!$mailReady): ?>
+  <div class="mb-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-200">
+    <span class="e">These customer tools are locked until you connect a <strong>verified mail sender</strong> —
+      <a class="underline text-cyan-300 font-bold" href="<?= e(url('admin/mail-settings.php')) ?>">My mail sender</a>.</span>
+    <span class="b">গ্রাহক টুলগুলো একটি <strong>যাচাইকৃত মেইল সেন্ডার</strong> যুক্ত না করা পর্যন্ত বন্ধ —
+      <a class="underline text-cyan-300 font-bold" href="<?= e(url('admin/mail-settings.php')) ?>">আমার মেইল সেন্ডার</a>।</span>
+  </div>
+  <?php endif; ?>
   <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
     <p class="text-sm text-slate-400"><?= l('Add a customer, manually verify them, edit details, delete an account, or send one-off / bulk emails.', 'কাস্টমার যোগ করুন, ম্যানুয়ালি যাচাই করুন, তথ্য সম্পাদনা করুন, অ্যাকাউন্ট মুছুন, বা একক / বাল্ক ইমেইল পাঠান।') ?></p>
     <div class="flex flex-wrap gap-2 w-full lg:w-auto justify-start lg:justify-end">
-      <button type="button" id="btn-add-customer" class="btn-teal !py-2.5 !px-4 text-xs">
+      <button type="button" id="btn-add-customer" class="btn-teal !py-2.5 !px-4 text-xs" <?= $mailReady ? '' : 'disabled' ?>>
         <span class="e">+ Add customer</span><span class="b">+ কাস্টমার যোগ করুন</span>
       </button>
-      <button type="button" id="btn-bulk-email" class="btn-accent !py-2.5 !px-4 text-xs">
+      <button type="button" id="btn-bulk-email" class="btn-accent !py-2.5 !px-4 text-xs" <?= $mailReady ? '' : 'disabled' ?>>
         <span class="e">Email all customers</span><span class="b">সব কাস্টমারে ইমেইল</span>
       </button>
       <form method="get" class="flex gap-2">
@@ -91,7 +100,7 @@ require_once __DIR__ . '/inc/head.php';
           <td><?= tick_dot($em) ?></td>
           <td><?= tick_dot($ph) ?></td>
           <td>
-            <select class="override-select input !py-1.5 !px-2 text-xs w-36" data-id="<?= (int) $u['id'] ?>" data-orig="<?= e($u['admin_override']) ?>">
+            <select class="override-select input !py-1.5 !px-2 text-xs w-36" data-id="<?= (int) $u['id'] ?>" data-orig="<?= e($u['admin_override']) ?>" <?= $mailReady ? '' : 'disabled' ?>>
               <?php foreach ($ticks as $tk => $lb): ?>
                 <option value="<?= e($tk) ?>" <?= $u['admin_override'] === $tk ? 'selected' : '' ?>><?= e($lb[0]) ?></option>
               <?php endforeach; ?>
@@ -100,13 +109,13 @@ require_once __DIR__ . '/inc/head.php';
           <td>
             <div class="flex items-center gap-1.5 justify-end">
               <button type="button" class="ov-update btn-teal !py-1.5 !px-2.5 !text-xs shrink-0" data-id="<?= (int) $u['id'] ?>" disabled data-loading-wrap="1"
-                      title="<?= e(l_attr('Apply override', 'ওভাররাইড প্রযোজ্য করুন')) ?>"><?= l('Update', 'আপডেট') ?></button>
+                      title="<?= e(l_attr('Apply override', 'ওভাররাইড প্রযোজ্য করুন')) ?>" <?= $mailReady ? '' : 'disabled' ?>><?= l('Update', 'আপডেট') ?></button>
               <button type="button" class="cust-edit btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0" data-id="<?= (int) $u['id'] ?>"
                       data-name="<?= e($u['name']) ?>" data-email="<?= e($u['email']) ?>" data-phone="<?= e($u['phone'] ?? '') ?>"
                       data-email-v="<?= $u['email_verified'] ? '1' : '0' ?>" data-whats-v="<?= $u['whatsapp_verified'] ? '1' : '0' ?>"
-                      title="<?= e(l_attr('Edit', 'সম্পাদনা')) ?>">✎</button>
+                      title="<?= e(l_attr('Edit', 'সম্পাদনা')) ?>" <?= $mailReady ? '' : 'disabled' ?>>✎</button>
               <button type="button" class="cust-email btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0" data-id="<?= (int) $u['id'] ?>"
-                      title="<?= e(l_attr('Send email', 'ইমেইল পাঠান')) ?>">✉</button>
+                      title="<?= e(l_attr('Send email', 'ইমেইল পাঠান')) ?>" <?= $mailReady ? '' : 'disabled' ?>>✉</button>
               <?php if (!$isAdmin && $isSuper): ?>
               <button type="button" class="cust-del btn-ghost !py-1.5 !px-2.5 !text-xs shrink-0 !border-rose-400/20 hover:!border-rose-400/50 hover:!text-rose-300" data-id="<?= (int) $u['id'] ?>"
                       title="<?= e(l_attr('Delete', 'মুছুন')) ?>">🗑</button>

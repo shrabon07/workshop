@@ -6,6 +6,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!admin_mail_ready()) {
+    json_error('Connect and verify your mail sender (Mail settings → My mail sender) before creating customers.', 403);
+}
+
 $name   = trim((string) post('name'));
 $email  = strtolower(trim((string) post('email')));
 $phone  = trim((string) post('phone'));

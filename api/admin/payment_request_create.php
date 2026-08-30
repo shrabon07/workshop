@@ -7,6 +7,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!admin_mail_ready()) {
+    json_error('Connect and verify your mail sender (Mail settings → My mail sender) before sending payment requests.', 403);
+}
+
 $userId    = (int) post('user_id');
 $orderId   = (int) post('order_id');
 $amountRaw = (string) post('amount');

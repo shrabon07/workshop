@@ -36,12 +36,36 @@ final class DB
         return self::$pdo;
     }
 
-    /** Run a parameterised statement. */
+    /** Run a parameterised statement, reconnecting once if the link went stale. */
     public static function run(string $sql, array $params = []): PDOStatement
+    {
+        try {
+            return self::runOnce($sql, $params);
+        } catch (PDOException $e) {
+            // Server went away / lost connection mid-request (e.g. after slow SMTP sends).
+            if (self::isGoneAway($e)) {
+                self::$pdo = null;
+                return self::runOnce($sql, $params);
+            }
+            throw $e;
+        }
+    }
+
+    private static function runOnce(string $sql, array $params = []): PDOStatement
     {
         $stmt = self::pdo()->prepare($sql);
         $stmt->execute($params);
         return $stmt;
+    }
+
+    private static function isGoneAway(PDOException $e): bool
+    {
+        $code = $e->getCode();
+        if ((string) $code === '2006' || (string) $code === '2013') {
+            return true;
+        }
+        return stripos($e->getMessage(), 'server has gone away') !== false
+            || stripos($e->getMessage(), 'lost connection') !== false;
     }
 
     public static function get(string $sql, array $params = []): ?array

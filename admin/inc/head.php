@@ -21,6 +21,8 @@ $navItems = [
     'customers'  => ['url' => 'customers.php',  'icon' => '◉', 'key' => 'a_customers'],
     'admins'     => ['url' => 'admins.php',     'icon' => '🛡', 'key' => 'a_admins'],
     'chats'      => ['url' => 'support.php',      'icon' => '✉', 'key' => 'a_chats'],
+    'compose'    => ['url' => 'compose.php',      'icon' => '✍', 'key' => 'a_compose'],
+    'mail-log'   => ['url' => 'mail-log.php',     'icon' => '🗂', 'key' => 'a_mail_log'],
 ];
 // Regular admins connect their own Gmail sender here; the super admin is the
 // site account and never needs this page.

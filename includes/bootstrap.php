@@ -16,6 +16,7 @@ require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/email-template.php';
 require_once __DIR__ . '/notifications.php';
 require_once __DIR__ . '/payment-requests.php';
+require_once __DIR__ . '/custom-mail.php';
 
 if (!is_dir(UPLOAD_DIR)) {
     @mkdir(UPLOAD_DIR, 0775, true);

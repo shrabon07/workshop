@@ -6,6 +6,10 @@
 
 require_once __DIR__ . '/../../includes/admin-guard.php';
 
+if (!admin_mail_ready()) {
+    json_error('Connect and verify your mail sender (Mail settings → My mail sender) before sending customer emails.', 403);
+}
+
 $userId = (int) post('user_id');            // 0 => bulk
 $bulk   = $userId <= 0;
 $subject = trim((string) post('subject'));

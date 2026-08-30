@@ -42,6 +42,25 @@ function is_super_admin(): bool
         && (int) ($u['is_active'] ?? 1) === 1;
 }
 
+/**
+ * Whether the acting admin is allowed to drive email-sending operations
+ * (payment requests, customer emails, custom mail, order/customer actions
+ * that notify the client).
+ *  - Super admin: always allowed (sends from the site account).
+ *  - Regular admin: allowed only AFTER they've connected and verified a
+ *    personal Gmail app-password sender (per-admin sender model).
+ */
+function admin_mail_ready(): bool
+{
+    if (!is_admin()) {
+        return false;
+    }
+    if (is_super_admin()) {
+        return true;
+    }
+    return admin_mail_profile() !== null;
+}
+
 function is_logged_in(): bool
 {
     return current_user() !== null;
