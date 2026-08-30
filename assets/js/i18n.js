@@ -123,6 +123,21 @@
     acc_email_taken: { en: 'An account with this email already exists.', bn: 'এই ইমেইলে আগেই অ্যাকাউন্ট আছে।' },
     acc_weak_password: { en: 'Password must be at least 6 characters.', bn: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।' },
     acc_account_created: { en: 'Account created — welcome to Aurora Cyber!', bn: 'অ্যাকাউন্ট তৈরি হয়েছে — অরোরা সাইবারে স্বাগতম!' },
+    acc_mismatch_password: { en: 'Passwords do not match.', bn: 'পাসওয়ার্ড দুটি মিলছে না।' },
+
+    /* -------- password recovery -------- */
+    pwd_title: { en: 'Reset your password', bn: 'আপনার পাসওয়ার্ড রিসেট করুন' },
+    pwd_sub: { en: 'We\'ll email you a one-time code to verify it\'s you.', bn: 'নিশ্চিত করতে আমরা আপনাকে একটি ওয়ান-টাইম কোড ইমেইল করব।' },
+    pwd_forgot: { en: 'Forgot password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+    pwd_send_btn: { en: 'Send reset code', bn: 'রিসেট কোড পাঠান' },
+    pwd_code: { en: '6-digit code', bn: '৬ ডিজিটের কোড' },
+    pwd_confirm: { en: 'Confirm new password', bn: 'নতুন পাসওয়ার্ড নিশ্চিত করুন' },
+    pwd_reset_btn: { en: 'Reset password', bn: 'পাসওয়ার্ড রিসেট করুন' },
+    pwd_resend: { en: 'Resend code', bn: 'আবার কোড পাঠান' },
+    pwd_no_account: { en: 'No account found with that email address.', bn: 'এই ইমেইল ঠিকানায় কোনো অ্যাকাউন্ট পাওয়া যায়নি।' },
+    pwd_code_sent: { en: 'A reset code has been sent to your email.', bn: 'আপনার ইমেইলে একটি রিসেট কোড পাঠানো হয়েছে।' },
+    pwd_bad_code: { en: 'Incorrect or expired code. Please request a new one.', bn: 'কোডটি ভুল বা মেয়াদোত্তীর্ণ। অনুগ্রহ করে নতুন কোড নিন।' },
+    pwd_expired_code: { en: 'This code has expired. Please request a new one.', bn: 'কোডটি মেয়াদোত্তীর্ণ। অনুগ্রহ করে নতুন কোড নিন।' },
 
     /* -------- verification page -------- */
     verify_title: { en: 'Verify Your Account', bn: 'আপনার অ্যাকাউন্ট যাচাই করুন' },

@@ -76,6 +76,10 @@ require_once __DIR__ . '/../includes/public-header.php';
         <button type="submit" class="btn-teal w-full !py-3.5"><span data-i18n="acc_login_btn">Sign in</span></button>
       </form>
 
+      <p class="mt-4 text-center text-sm">
+        <a class="text-slate-400 hover:text-cyan-300 transition-colors" href="<?= e(url('account/forgot-password.php')) ?>"><span data-i18n="pwd_forgot">Forgot password?</span></a>
+      </p>
+
       <p class="mt-6 text-center text-sm text-slate-400">
         <span data-i18n="acc_no_account">New here?</span>
         <a class="text-cyan-300 font-semibold hover:text-cyan-200" href="<?= e(url('account/register.php')) ?>"><span data-i18n="acc_create_one">Create an account</span></a>
