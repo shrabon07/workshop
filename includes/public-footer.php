@@ -40,6 +40,8 @@ $ver = version_time();
         <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('') . '#portfolio') ?>"><span data-i18n="nav_portfolio">Portfolio</span></a></li>
         <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('') . '#order') ?>"><span data-i18n="nav_order">Start a project</span></a></li>
         <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('account/register.php')) ?>"><span data-i18n="nav_register">Create account</span></a></li>
+        <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('terms-privacy.php')) ?>"><span class="e">Terms &amp; Privacy</span><span class="b">শর্ত ও গোপনীয়তা</span></a></li>
+        <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(url('payment-methods.php')) ?>"><span class="e">Payment Methods</span><span class="b">পেমেন্ট মেথড</span></a></li>
         <li><a class="hover:text-cyan-300 transition-colors" href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a></li>
         <li><a class="hover:text-cyan-300 transition-colors" href="<?= e(APP_BASE_URL) ?>" target="_blank" rel="noopener">aurora-cyber.infy.click</a></li>
         <li><span class="text-slate-400">Mirpur, Dhaka-1215</span></li>

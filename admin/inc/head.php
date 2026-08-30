@@ -19,6 +19,7 @@ $navItems = [
     'orders'     => ['url' => 'orders.php',     'icon' => '◷', 'key' => 'a_orders'],
     'payments'   => ['url' => 'payments.php',   'icon' => '💳', 'key' => 'a_payments'],
     'customers'  => ['url' => 'customers.php',  'icon' => '◉', 'key' => 'a_customers'],
+    'admins'     => ['url' => 'admins.php',     'icon' => '🛡', 'key' => 'a_admins'],
     'chats'      => ['url' => 'support.php',      'icon' => '✉', 'key' => 'a_chats'],
 ];
 

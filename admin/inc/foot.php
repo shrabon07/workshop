@@ -6,6 +6,8 @@ $v = version_time();
     <footer class="relative px-6 sm:px-8 py-6 border-t border-white/5 text-xs text-slate-600 flex flex-wrap gap-4 items-center justify-between">
       <span>© <?= date('Y') ?> <b class="text-slate-400">Aurora Cyber</b> · <span data-i18n="footer_rights">All rights reserved.</span></span>
       <span class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <a class="hover:text-cyan-400 transition-colors" href="<?= e(url('terms-privacy.php')) ?>" target="_blank" rel="noopener">Term &amp; Privacy</a>
+        <a class="hover:text-cyan-400 transition-colors" href="<?= e(url('payment-methods.php')) ?>" target="_blank" rel="noopener">Payment</a>
         <a class="hover:text-cyan-400 transition-colors" href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a>
         <a class="hover:text-cyan-400 transition-colors" href="<?= e(APP_BASE_URL) ?>" target="_blank" rel="noopener">aurora-cyber.infy.click</a>
         <span>Mirpur, Dhaka-1215</span>
